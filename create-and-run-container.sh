@@ -9,4 +9,5 @@ docker container run -d \
   --mount type=volume,source=$2,target=/home/dev/projects \
   --mount type=bind,source=${HOME}/.ssh,target=/home/dev/.ssh,readonly \
   --mount type=bind,source=${HOME}/.aws,target=/home/dev/.aws \
+  --mount type=bind,source=${HOME}/.pab,target=/home/dev/.pab,readonly \
   dev-container-image-python:$3
