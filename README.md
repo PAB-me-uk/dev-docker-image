@@ -1,13 +1,30 @@
-# dev-docker-image
+# dev-container
 
-## Access host vm
+# Create a volume (used to persist data)
+
+```bash
+./create-volume.sh test-volume
+```
+
+Argument is new volume name
+
+# Build image
+
+```bash
+./build-image.sh 3.6
+```
+
+Argument is desired python version
+Image will be called `dev-container-image:3.6`
+
+# Create and run container
 
 ```
-docker run -it --rm --privileged --pid=host alpine:edge nsenter -t 1 -m -u -n -i sh
+./create-and-run-container.sh test-container test-volume 3.6
 ```
 
-## Locate volumes
+Arguments are name for container, name of volume to mount, python version (used to select image)
 
-```
-ls /var/lib/docker/volumes/
-```
+
+
+
