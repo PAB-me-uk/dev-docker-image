@@ -4,6 +4,9 @@ if [[ $# -ne 3 ]]; then
     exit 4
 fi
 
+echo Deleting existing container with name: $1
+echo Ignore any "No such container message" below:
+docker container rm -f $1 || true
 docker container run -d \
   --name $1 \
   --mount type=volume,source=$2,target=/home/dev/projects \

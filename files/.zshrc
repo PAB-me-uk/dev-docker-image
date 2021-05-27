@@ -15,4 +15,7 @@ if [[ -d ~/.pab ]]; then
   for f in ~/.pab/*; do source $f; done
 fi
 
+export PATH="/home/dev/.local/bin/:$PATH"
+cd ~/projects
+
 
