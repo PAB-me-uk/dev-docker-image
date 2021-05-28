@@ -38,21 +38,31 @@ RUN apt-get update \
     && touch /etc/gitconfig
     # && chown ${USER_NAME} /tmp/requirements.txt
 
+# Copy files to user home
+COPY --chown=${USER_UID} home/* ${USER_HOME}/
 
 # Run as user
-#   Install awsume
-#   Switch to zsh
-#   Prevent vscode owning git config
-#   Install python dependancies
+#    Install awsume
+#    Switch to zsh
+#    Prevent vscode owning git config
+#    Install python dependancies
+#    Install nvm & nodejs lts
 RUN su - ${USER_NAME} -c "pipx install awsume \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && printf \"zsh\" >> ~/.bashrc \
     && touch ~/.gitconfig \
-    && pip install -r /tmp/requirements.txt --user \
-    && sudo rm /tmp/requirements.txt"
+    && cd /tmp \
+    && pip install -r requirements.txt --user \
+    && sudo rm requirements.txt \
+    && wget -nv https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
+    && zsh install.sh \
+    && zsh \
+    && . ~/.nvm/nvm.sh \
+    && nvm install --lts \
+    && nvm alias default node \
+    && rm install.sh"
 
-# Copy files to user home
-COPY --chown=${USER_UID} home/* ${USER_HOME}/
+
 
 USER ${USER_NAME}
 CMD ["tail", "-f", "/dev/null"]
