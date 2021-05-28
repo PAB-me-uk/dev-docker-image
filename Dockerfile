@@ -1,42 +1,58 @@
 ARG PYTHON_VERSION=3.9
 FROM python:${PYTHON_VERSION}
 
+ARG USER_NAME=dev
+ARG GROUP_NAME=${USER_NAME}
+ARG USER_HOME=/home/${USER_NAME}
+ARG USER_UID=1000
+ARG USER_GID=1000
+ARG WORKSPACE=/workspace
+
+COPY packages/* /tmp/
+
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
     && apt-get purge -y imagemagick imagemagick-6-common \
-    && apt-get install -y apt-utils \
-    && apt-get install -y zsh sudo nano less nodejs pipx python3-venv \
+    # Install packages
+    && xargs -a /tmp/packages.txt apt-get install -y \
+    && rm /tmp/packages.txt \
+    # Create user and group, allow sudo
+    && groupadd --gid ${USER_GID} ${GROUP_NAME} \
+    && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
+    && usermod --groups sudo  --shell /usr/bin/zsh ${USER_NAME} \
+    && echo "${USER_NAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
+    && chmod 0440 /etc/sudoers.d/${USER_NAME} \
+    # Install AWS CLI
+    && cd /tmp \
+    && wget -nv https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
+    && unzip -q awscli-exe-linux-x86_64.zip \
+    && /bin/bash ./aws/install \
+    && rm -rf /tmp/aws \
+    # Configure workspace
+    && mkdir ${WORKSPACE} \
+    && chown ${USER_UID}:${USER_GID} ${WORKSPACE} \
+    && chmod 0755 ${WORKSPACE} \
+    && chmod g+s ${WORKSPACE} \
+    # Prevent vscode owning git config
     && touch /etc/gitconfig
-
-  RUN cd /tmp \
-      && wget -nv https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
-      && unzip -q awscli-exe-linux-x86_64.zip \
-      && /bin/bash ./aws/install \
-      && rm -rf /tmp/aws
-
-# UID must match volume perms
-ARG USER_UID=1000
-ARG USER_GID=1000
-
-RUN groupadd --gid $USER_GID dev \
-    && adduser --gid $USER_GID --uid $USER_UID --home /home/dev --disabled-password --gecos "" dev \
-    && usermod --groups sudo  --shell /usr/bin/zsh dev \
-    && echo "dev ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/dev \
-    && chmod 0440 /etc/sudoers.d/dev
-
-COPY --chown=dev files/.zshrc /home/dev/.zshrc
-
-RUN su - dev -c "pipx install awsume && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc"
-RUN su - dev -c "printf \"zsh\" >> ~/.bashrc && touch ~/.gitconfig"
+    # && chown ${USER_NAME} /tmp/requirements.txt
 
 
-RUN mkdir /home/dev/projects \
-    && chown $USER_UID:$USER_GID /home/dev/projects \
-    && chmod 0755 /home/dev/projects \
-    && chmod g+s /home/dev/projects
+# Run as user
+#   Install awsume
+#   Switch to zsh
+#   Prevent vscode owning git config
+#   Install python dependancies
+RUN su - ${USER_NAME} -c "pipx install awsume \
+    && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
+    && printf \"zsh\" >> ~/.bashrc \
+    && touch ~/.gitconfig \
+    && pip install -r /tmp/requirements.txt --user \
+    && sudo rm /tmp/requirements.txt"
 
-COPY --chown=dev files/fixgit.sh /home/dev/.local/bin/fixgit
+# Copy files to user home
+COPY --chown=${USER_UID} home/* ${USER_HOME}/
 
-USER dev
+USER ${USER_NAME}
 CMD ["tail", "-f", "/dev/null"]

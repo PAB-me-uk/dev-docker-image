@@ -1,0 +1,12 @@
+apt-utils
+less
+nano
+nodejs
+npm
+pipx
+python3-venv
+sudo
+zsh
+manpages
+manpages-dev
+man-db
