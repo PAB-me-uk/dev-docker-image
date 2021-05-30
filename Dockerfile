@@ -34,6 +34,14 @@ RUN apt-get update \
     && chown ${USER_UID}:${USER_GID} ${WORKSPACE} \
     && chmod 0755 ${WORKSPACE} \
     && chmod g+s ${WORKSPACE} \
+    # Configure ~/.ssh
+    && mkdir ${USER_HOME}/.ssh \
+    && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.ssh \
+    && chmod 0400 ${USER_HOME}/.ssh \
+    # Configure ~/.aws
+    && mkdir ${USER_HOME}/.aws \
+    && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.aws \
+    && chmod 0600 ${USER_HOME}/.aws \
     # Prevent vscode owning git config
     && touch /etc/gitconfig
     # && chown ${USER_NAME} /tmp/requirements.txt
