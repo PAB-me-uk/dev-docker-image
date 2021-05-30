@@ -7,6 +7,8 @@ fi
 echo Deleting existing container with name: $1
 echo Ignore any "No such container message" below:
 docker container rm -f $1 || true
+mkdir -p ~/.ssh
+mkdir -p ~/.aws
 
 if [[ -d ~/.zsh-extra ]]; then
   docker container run -d \
