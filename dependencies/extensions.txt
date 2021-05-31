@@ -1,0 +1,12 @@
+ms-python.python
+ms-python.vscode-pylance
+ms-toolsai.jupyter
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+Orta.vscode-jest
+kddejong.vscode-cfn-lint
+eastman.vscode-cfn-nag
+streetsidesoftware.code-spell-checker
+ryu1kn.partial-diff
+moshfeu.compare-folders
+oderwat.indent-rainbow

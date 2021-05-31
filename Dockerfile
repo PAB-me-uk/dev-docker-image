@@ -6,17 +6,18 @@ ARG GROUP_NAME=${USER_NAME}
 ARG USER_HOME=/home/${USER_NAME}
 ARG USER_UID=1000
 ARG USER_GID=1000
+ARG DEPENDENCIES=/tmp/dependencies
 ARG WORKSPACE=/workspace
 
-COPY packages/* /tmp/
+COPY dependencies/* ${DEPENDENCIES}/
 
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
     && apt-get purge -y imagemagick imagemagick-6-common \
     # Install packages
-    && xargs -a /tmp/packages.txt apt-get install -y \
-    && rm /tmp/packages.txt \
+    && xargs -a ${DEPENDENCIES}/packages.txt apt-get install -y \
+    && rm ${DEPENDENCIES}/packages.txt \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
@@ -29,6 +30,13 @@ RUN apt-get update \
     && unzip -q awscli-exe-linux-x86_64.zip \
     && /bin/bash ./aws/install \
     && rm -rf /tmp/aws \
+    # Install terraform
+    && wget -nv https://apt.releases.hashicorp.com/gpg  \
+    && apt-key add gpg \
+    && rm gpg \
+    && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+    && apt-get update \
+    && apt-get install -y terraform \
     # Configure workspace
     && mkdir ${WORKSPACE} \
     && chown ${USER_UID}:${USER_GID} ${WORKSPACE} \
@@ -47,21 +55,23 @@ RUN apt-get update \
     # && chown ${USER_NAME} /tmp/requirements.txt
 
 # Copy files to user home
-COPY --chown=${USER_UID} home/* ${USER_HOME}/
+COPY --chown=${USER_UID} home/. ${USER_HOME}/
 
 # Run as user
 #    Install awsume
 #    Switch to zsh
 #    Prevent vscode owning git config
-#    Install python dependancies
+#    Install python dependencies
 #    Install nvm & nodejs lts
 RUN su - ${USER_NAME} -c "pipx install awsume \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && printf \"zsh\" >> ~/.bashrc \
     && touch ~/.gitconfig \
+    && chmod +x ${USER_HOME}/.local/bin/fixgit \
+    && chmod +x ${USER_HOME}/.local/bin/versions \
+    && pip install -r ${DEPENDENCIES}/requirements.txt --user \
+    && sudo rm ${DEPENDENCIES}/requirements.txt \
     && cd /tmp \
-    && pip install -r requirements.txt --user \
-    && sudo rm requirements.txt \
     && wget -nv https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
     && zsh install.sh \
     && zsh \
@@ -69,8 +79,6 @@ RUN su - ${USER_NAME} -c "pipx install awsume \
     && nvm install --lts \
     && nvm alias default node \
     && rm install.sh"
-
-
 
 USER ${USER_NAME}
 CMD ["tail", "-f", "/dev/null"]

@@ -34,6 +34,20 @@ if [[ -d ~/.zsh-extra ]]; then
   for f in ~/.zsh-extra/*; do source $f; done
 fi
 
-~/fixgit.sh
+
+# Install vscode extensions (once only)
+if [[ -f /tmp/dependencies/extensions.txt ]]
+  then
+  while IFS="" read -r p || [ -n "$p" ]
+  do
+    if [[ ! -z "$p" ]]
+      then
+        code --install-extension $p
+    fi
+  done < /tmp/dependencies/extensions.txt
+  sudo rm /tmp/dependencies/extensions.txt
+fi
+
 export PATH="/home/dev/.local/bin/:$PATH"
+fixgit
 cd /workspace

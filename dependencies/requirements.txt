@@ -1,0 +1,4 @@
+# No fixed versions please as not compatable with all python versions
+prospector
+autopep8
+jupyter
