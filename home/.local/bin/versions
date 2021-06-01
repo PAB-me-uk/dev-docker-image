@@ -1,5 +1,6 @@
 echo "Python    : $(python --version | awk '{print $NF}')"
 echo "NodeJS    : $(node --version)"
+echo "NPM       : $(npm --version)"
 echo "AWS CLI   : $(aws --version)"
 echo "Awsume    : $(awsume -v 2>&1 | sed -n 2p)"
 echo "Terraform : $(terraform --version | sed -n 1p | awk '{print $2}')"

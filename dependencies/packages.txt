@@ -6,8 +6,6 @@ man-db
 manpages
 manpages-dev
 nano
-nodejs
-npm
 pipx
 python3-venv
 sudo
