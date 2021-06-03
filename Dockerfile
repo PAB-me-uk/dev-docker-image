@@ -45,13 +45,13 @@ RUN apt-get update \
     # Configure ~/.ssh
     && mkdir ${USER_HOME}/.ssh \
     && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.ssh \
-    && chmod 0400 ${USER_HOME}/.ssh \
+    && chmod 0644 ${USER_HOME}/.ssh \
+    && touch ${USER_HOME}/.ssh/known_hosts \
+    && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.ssh/known_hosts \
     # Configure ~/.aws
     && mkdir ${USER_HOME}/.aws \
     && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.aws \
-    && chmod 0600 ${USER_HOME}/.aws \
-    # Prevent vscode owning git config
-    && touch /etc/gitconfig
+    && chmod 0600 ${USER_HOME}/.aws
     # && chown ${USER_NAME} /tmp/requirements.txt
 
 # Copy files to user home
@@ -66,10 +66,9 @@ COPY --chown=${USER_UID} home/. ${USER_HOME}/
 RUN su - ${USER_NAME} -c "pipx install awsume \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && printf \"zsh\" >> ~/.bashrc \
-    && touch ~/.gitconfig \
     && chmod +x ${USER_HOME}/.local/bin/fixgit \
     && chmod +x ${USER_HOME}/.local/bin/versions \
-    && pip install -r ${DEPENDENCIES}/requirements.txt --user \
+    && pip install -r ${DEPENDENCIES}/requirements.txt --user --no-warn-script-location \
     && sudo rm ${DEPENDENCIES}/requirements.txt \
     && cd /tmp \
     && wget -nv https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \

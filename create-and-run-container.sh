@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 if [[ $# -ne 3 ]]; then
     echo "$0: Three arguments are required: name for the new container, name of volume to mount, python version (e.g. `3.6`)"
@@ -19,6 +20,7 @@ if [[ -d ~/.zsh-extra ]]; then
     --mount type=bind,source=${HOME}/.zsh-extra,target=/home/dev/.zsh-extra,readonly \
     dev-container-image-python:$3
 else
+
   docker container run -d \
     --name $1 \
     --mount type=volume,source=$2,target=/workspace \

@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 if [[ $# -ne 1 ]]; then
     echo "$0: A single argument for volume name is required."
