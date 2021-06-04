@@ -50,4 +50,11 @@ fi
 
 export PATH="/home/dev/.local/bin/:$PATH"
 fixgit
+
+SSH_AGENT_LINES=$(ps aux | grep ssh-agent | grep -v "<defunct>" | wc -l)
+if [ "2" -gt $SSH_AGENT_LINES ] ; then
+    ssh-agent -s | grep -v echo > ~/.ssh-env-vars
+fi
+. ~/.ssh-env-vars
+
 cd /workspace/
