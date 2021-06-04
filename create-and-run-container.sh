@@ -5,17 +5,16 @@ if [[ $# -ne 3 ]]; then
     exit 4
 fi
 
-echo Deleting existing container with name: $1
-echo Ignore any "No such container message" below:
-docker container rm -f $1 || true
+echo Deleting any existing container with name: $1
+docker container rm -f $1 2> /dev/null 1> /dev/null || true
 mkdir -p ~/.ssh
 mkdir -p ~/.aws
-
+echo Creating container with name: $1
 if [[ -d ~/.zsh-extra ]]; then
   docker container run -d \
     --name $1 \
     --mount type=volume,source=$2,target=/workspace \
-    --mount type=bind,source=${HOME}/.ssh,target=/home/dev/.ssh,readonly \
+    --mount type=bind,source=${HOME}/.ssh,target=/home/dev/.ssh \
     --mount type=bind,source=${HOME}/.aws,target=/home/dev/.aws \
     --mount type=bind,source=${HOME}/.zsh-extra,target=/home/dev/.zsh-extra,readonly \
     dev-container-image-python:$3
@@ -24,8 +23,9 @@ else
   docker container run -d \
     --name $1 \
     --mount type=volume,source=$2,target=/workspace \
-    --mount type=bind,source=${HOME}/.ssh,target=/home/dev/.ssh,readonly \
+    --mount type=bind,source=${HOME}/.ssh,target=/home/dev/.ssh \
     --mount type=bind,source=${HOME}/.aws,target=/home/dev/.aws \
     dev-container-image-python:$3
 fi
+echo Container created with name: $1
 

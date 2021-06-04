@@ -50,4 +50,4 @@ fi
 
 export PATH="/home/dev/.local/bin/:$PATH"
 fixgit
-cd /workspace
+cd /workspace/

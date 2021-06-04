@@ -45,14 +45,11 @@ RUN apt-get update \
     # Configure ~/.ssh
     && mkdir ${USER_HOME}/.ssh \
     && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.ssh \
-    && chmod 0644 ${USER_HOME}/.ssh \
-    && touch ${USER_HOME}/.ssh/known_hosts \
-    && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.ssh/known_hosts \
+    && chmod 0700 ${USER_HOME}/.ssh \
     # Configure ~/.aws
     && mkdir ${USER_HOME}/.aws \
     && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.aws \
-    && chmod 0600 ${USER_HOME}/.aws
-    # && chown ${USER_NAME} /tmp/requirements.txt
+    && chmod 0700 ${USER_HOME}/.aws
 
 # Copy files to user home
 COPY --chown=${USER_UID} home/. ${USER_HOME}/
@@ -60,9 +57,9 @@ COPY --chown=${USER_UID} home/. ${USER_HOME}/
 # Run as user
 #    Install awsume
 #    Switch to zsh
-#    Prevent vscode owning git config
 #    Install python dependencies
 #    Install nvm & nodejs lts
+#    Prevent vscode touching know_hosts
 RUN su - ${USER_NAME} -c "pipx install awsume \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && printf \"zsh\" >> ~/.bashrc \
@@ -77,7 +74,9 @@ RUN su - ${USER_NAME} -c "pipx install awsume \
     && . ~/.nvm/nvm.sh \
     && nvm install --lts \
     && nvm alias default node \
-    && rm install.sh"
+    && rm install.sh \
+    && touch ${USER_HOME}/.ssh/known_hosts"
 
 USER ${USER_NAME}
 CMD ["tail", "-f", "/dev/null"]
+
