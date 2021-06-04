@@ -1,38 +1,55 @@
 # dev-container
 
-## Build image (once per python version)
+## Windows Prequisites
+
+[Window Subsystem For Linux 2.0](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+[Docker Desktop](https://docs.docker.com/docker-for-windows/wsl/)
+
+Follow configuration instructions on links above
+
+Ensure your docker desktop is not the deafult wsl OS use `wsl --list ` and `wsl --set-default OS-NAME-HERE` to choose the OS you installed from the microsoft store
+
+At a command promt run `whl` to switch to your WLS OS
+
+If you dont already have your ssh keys in ~/.ssh copy using commands below
+
+cp -Rv /mnt/c/Users/YOUR_WINDOWS_USERNAME/.ssh/ ~/.ssh/
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/*
+
+Same for AWS config
+
+cp -Rv /mnt/c/Users/YOUR_WINDOWS_USERNAME/.aws/ ~/.aws/
+chmod 700 ~/.aws
+chmod 700 ~/.aws/*
+
+Alternatively you can alter `create-and-run-container.sh` to mount `/mnt/c/Users/YOUR_WINDOWS_USERNAME/.ssh/` and `/mnt/c/Users/YOUR_WINDOWS_USERNAME/.aws/` directly
+
+## Mac Prequisites
+
+[Docker Desktop](https://docs.docker.com/docker-for-mac/install/)
+
+Follow configuration instructions on links above
+
+## Checkout repo
+
+***If using windows this must be done in your main WSL OS***
 
 ```bash
-# Linux \ MacOS
-./build-image.sh 3.6
-# Windows
-.\build-image.bat 3.6
+eval $(ssh-agent)
+ssh-add ~/.ssh/YOUR_SSH_KEYNAME
+git clone REPO_SSH_URL
+cd XXX
 ```
 
-Argument is desired python version
-Image will be called `dev-container-image:3.6`
-
-## Create a volume (used to persist data) (once per client)
+## Creating a new container
 
 ```bash
-# Linux \ MacOS
-./create-volume.sh test-volume 
-# Windows
-.\create-volume.bat test-volume 
+./build-create-and-run.sh my-container my-volume 3.8
 ```
 
-Argument is new volume name
-
-## Create and run container (once per container)
-
-```bash
-# Linux \ MacOS
-./create-and-run-container.sh test-container test-volume 3.6
-# Windows
-.\create-and-run-container.bat test-container test-volume 3.6
-```
-
-Arguments are name for container, name of volume to mount, python version (used to select image)
+Change my-x to desired names, 3.8 is desired Python version
 
 ## Connect to container
 
@@ -40,7 +57,7 @@ Arguments are name for container, name of volume to mount, python version (used 
 docker exec -it test-container zsh
 ```
 
-Or use VSCode Docker to attach VSCode
+Or use VSCode Docker and Remote Container Extensions to attach VSCode directly into container
 
 ## Stop Container
 
@@ -56,8 +73,6 @@ docker start test-container
 
 ## Notes
 
-Volume is mounted as `/workspace` files within this directory will be persisted
+Volume is mounted as `/workspace` files within this directory will be persisted unless you delete the volume
 
 Other paths within container will be lost if the container is removed or recreated.
-
-If using WSL 2.0 you should checkout this code and use within a WSL2.0 OS for best performance rather than using directly in windows. See https://docs.docker.com/docker-for-windows/wsl/ for more information
