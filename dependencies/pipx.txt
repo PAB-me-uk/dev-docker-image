@@ -1,2 +1,5 @@
 # No fixed versions please as not compatable with all python versions, see pipx.txt for python utilities
-jupyter
+awsume
+cfn-lint
+prospector
+autopep8

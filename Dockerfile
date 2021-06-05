@@ -55,12 +55,14 @@ RUN apt-get update \
 COPY --chown=${USER_UID} home/. ${USER_HOME}/
 
 # Run as user
-#    Install awsume
 #    Switch to zsh
+#    Install pipx depedancies
+#    Configure awsume
 #    Install python dependencies
 #    Install nvm & nodejs lts
 #    Prevent vscode touching know_hosts
-RUN su - ${USER_NAME} -c "pipx install awsume \
+RUN su - ${USER_NAME} -c "printf \"zsh\" >> ~/.bashrc \
+    && grep -v \"^ *#\" ${DEPENDENCIES}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python {} \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && printf \"zsh\" >> ~/.bashrc \
     && chmod +x ${USER_HOME}/.local/bin/fixgit \
