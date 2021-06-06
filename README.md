@@ -64,84 +64,12 @@ code --install-extension moshfeu.compare-folders
 code --install-extension oderwat.indent-rainbow
 ```
 
-Press ctrl+shift+p for command palette and choose "Preferences: Open Settings (JSON)" to edit settings
+Press ctrl+shift+p for command palette and choose "Preferences: Open Settings (JSON)" to edit settings, add the setting below
 
-The first setting is required the rest are recommended for Python and Javascript development.
 
 ```json
 {
   "remote.containers.gitCredentialHelperConfigLocation": "none",
-
-  "editor.detectIndentation": false,
-  "editor.tabSize": 2,
-  "files.trimTrailingWhitespace": true,
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[python]": {
-    "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
-    "editor.tabSize": 4,
-    "editor.formatOnSave": true
-  },
-  "python.formatting.provider": "autopep8",
-  "python.formatting.autopep8Args": [
-    "--max-line-length=100",
-    "--indent-size=4"
-  ],
-  "python.linting.prospectorEnabled": true,
-  "python.linting.enabled": true,
-  "python.linting.prospectorArgs": [
-    "--full-pep8",
-    "--max-line-length",
-    "100",
-    "--strictness",
-    "medium",
-    "--ignore-patterns",
-    "pylint(import-error)"
-  ],
-  "python.linting.banditEnabled": false,
-  "python.linting.flake8Enabled": false,
-  "python.linting.mypyEnabled": false,
-  "python.linting.pycodestyleEnabled": false,
-  "python.linting.pydocstyleEnabled": false,
-  "python.linting.pylamaEnabled": false,
-  "python.linting.pylintEnabled": false,
-  "python.analysis.autoImportCompletions": false,
-  "python.analysis.diagnosticSeverityOverrides": {
-    "reportMissingImports": "none"
-  },
-  "python.linting.pylintArgs": ["--disable", "E0401"],
-  "javascript.updateImportsOnFileMove.enabled": "never",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
-  "cfnLint.validateUsingJsonSchema": false,
-  "cSpell.language": "en-GB",
-  "python.languageServer": "Pylance",
-  "workbench.editorAssociations": [
-    {
-      "viewType": "jupyter.notebook.ipynb",
-      "filenamePattern": "*.ipynb"
-    }
-  ]
 }
 ```
 

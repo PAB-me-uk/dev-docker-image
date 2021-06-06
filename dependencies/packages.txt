@@ -11,3 +11,6 @@ python3-venv
 sudo
 tree
 zsh
+ruby
+terraform
+docker-ce-cli

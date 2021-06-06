@@ -11,10 +11,17 @@ ARG WORKSPACE=/workspace
 
 COPY dependencies/* ${DEPENDENCIES}/
 
-RUN apt-get update \
-    && export DEBIAN_FRONTEND=noninteractive \
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && cd /tmp \
+    && apt-get update && apt-get install -y apt-utils software-properties-common \
     # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
     && apt-get purge -y imagemagick imagemagick-6-common \
+    # Add extra repositries
+    && wget -nv https://apt.releases.hashicorp.com/gpg && apt-key add gpg && rm gpg \
+    && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+    && wget -nv https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
+    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+    && apt-get update \
     # Install packages
     && xargs -a ${DEPENDENCIES}/packages.txt apt-get install -y \
     && rm ${DEPENDENCIES}/packages.txt \
@@ -30,13 +37,8 @@ RUN apt-get update \
     && unzip -q awscli-exe-linux-x86_64.zip \
     && /bin/bash ./aws/install \
     && rm -rf /tmp/aws \
-    # Install terraform
-    && wget -nv https://apt.releases.hashicorp.com/gpg  \
-    && apt-key add gpg \
-    && rm gpg \
-    && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-    && apt-get update \
-    && apt-get install -y terraform \
+    # Install cfn-nag
+    && gem install cfn-nag \
     # Configure workspace
     && mkdir ${WORKSPACE} \
     && chown ${USER_UID}:${USER_GID} ${WORKSPACE} \
@@ -64,6 +66,7 @@ COPY --chown=${USER_UID} home/. ${USER_HOME}/
 RUN su - ${USER_NAME} -c "printf \"zsh\" >> ~/.bashrc \
     && grep -v \"^ *#\" ${DEPENDENCIES}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python {} \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
+    && sudo ln -s ${USER_HOME}/.local/bin/cfn-lint /usr/local/bin/cfn-lint \
     && printf \"zsh\" >> ~/.bashrc \
     && chmod +x ${USER_HOME}/.local/bin/fixgit \
     && chmod +x ${USER_HOME}/.local/bin/versions \

@@ -17,6 +17,7 @@ if [[ -d ~/.zsh-extra ]]; then
     --mount type=bind,source=${HOME}/.ssh,target=/home/dev/.ssh \
     --mount type=bind,source=${HOME}/.aws,target=/home/dev/.aws \
     --mount type=bind,source=${HOME}/.zsh-extra,target=/home/dev/.zsh-extra,readonly \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     dev-container-image-python:$3
 else
 
@@ -25,6 +26,7 @@ else
     --mount type=volume,source=$2,target=/workspace \
     --mount type=bind,source=${HOME}/.ssh,target=/home/dev/.ssh \
     --mount type=bind,source=${HOME}/.aws,target=/home/dev/.aws \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     dev-container-image-python:$3
 fi
 echo Container created with name: $1

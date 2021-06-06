@@ -1,5 +1,84 @@
 {
   "python.linting.prospectorPath": "/home/dev/.local/bin/prospector",
   "python.formatting.autopep8Path": "/home/dev/.local/bin/autopep8",
-  "cfnLint.path": "/home/dev/.local/bin/cfn-lint"
+  "cfnLint.path": "/home/dev/.local/bin/cfn-lint",
+
+  "cfnLint.validateUsingJsonSchema": false,
+  "files.associations": {
+    "*.template": "json",
+    "*.stacks": "yaml"
+  },
+
+  "cSpell.language": "en-GB",
+
+  "editor.detectIndentation": false,
+  "files.trimTrailingWhitespace": true,
+  "editor.tabSize": 2,
+
+  "[python]": {
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+  "python.formatting.provider": "autopep8",
+  "python.formatting.autopep8Args": [
+    "--max-line-length=100",
+    "--indent-size=4"
+  ],
+  "python.linting.prospectorEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.prospectorArgs": [
+    "--full-pep8",
+    "--max-line-length",
+    "100",
+    "--strictness",
+    "medium",
+    "--ignore-patterns",
+    "pylint(import-error)"
+  ],
+  "python.linting.banditEnabled": false,
+  "python.linting.flake8Enabled": false,
+  "python.linting.mypyEnabled": false,
+  "python.linting.pycodestyleEnabled": false,
+  "python.linting.pydocstyleEnabled": false,
+  "python.linting.pylamaEnabled": false,
+  "python.linting.pylintEnabled": false,
+  "python.linting.pylintArgs": ["--disable", "E0401"],
+  "python.analysis.autoImportCompletions": false,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none"
+  },
+  "python.languageServer": "Pylance",
+  "workbench.editorAssociations": [
+    {
+      "viewType": "jupyter.notebook.ipynb",
+      "filenamePattern": "*.ipynb"
+    }
+  ],
+
+  "javascript.updateImportsOnFileMove.enabled": "never",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ]
 }
