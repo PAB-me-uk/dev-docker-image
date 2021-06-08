@@ -2,10 +2,9 @@ apt-utils
 gnupg
 software-properties-common
 less
-man-db
-manpages
-manpages-dev
+man
 nano
+vim
 pipx
 python3-venv
 sudo

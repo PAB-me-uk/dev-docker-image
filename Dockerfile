@@ -23,8 +23,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
     && apt-get update \
     # Install packages
-    && xargs -a ${DEPENDENCIES}/packages.txt apt-get install -y \
+    && grep -v "^ *#" ${DEPENDENCIES}/packages.txt | xargs apt-get install -y \
     && rm ${DEPENDENCIES}/packages.txt \
+    && apt-get clean \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
@@ -35,6 +36,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && cd /tmp \
     && wget -nv https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
     && unzip -q awscli-exe-linux-x86_64.zip \
+    && rm awscli-exe-linux-x86_64.zip \
     && /bin/bash ./aws/install \
     && rm -rf /tmp/aws \
     # Install cfn-nag
@@ -64,13 +66,13 @@ COPY --chown=${USER_UID} home/. ${USER_HOME}/
 #    Install nvm & nodejs lts
 #    Prevent vscode touching know_hosts
 RUN su - ${USER_NAME} -c "printf \"zsh\" >> ~/.bashrc \
-    && grep -v \"^ *#\" ${DEPENDENCIES}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python {} \
+    && grep -v \"^ *#\" ${DEPENDENCIES}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {} \
+    && sudo rm ${DEPENDENCIES}/pipx.txt \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && sudo ln -s ${USER_HOME}/.local/bin/cfn-lint /usr/local/bin/cfn-lint \
-    && printf \"zsh\" >> ~/.bashrc \
     && chmod +x ${USER_HOME}/.local/bin/fixgit \
     && chmod +x ${USER_HOME}/.local/bin/versions \
-    && pip install -r ${DEPENDENCIES}/requirements.txt --user --no-warn-script-location \
+    && pip install -r ${DEPENDENCIES}/requirements.txt --user --no-warn-script-location --no-cache-dir \
     && sudo rm ${DEPENDENCIES}/requirements.txt \
     && cd /tmp \
     && wget -nv https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
@@ -79,6 +81,7 @@ RUN su - ${USER_NAME} -c "printf \"zsh\" >> ~/.bashrc \
     && . ~/.nvm/nvm.sh \
     && nvm install --lts \
     && nvm alias default node \
+    && nvm cache clear \
     && rm install.sh \
     && touch ${USER_HOME}/.ssh/known_hosts"
 
