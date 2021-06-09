@@ -20,4 +20,4 @@ docker commit -m="Release" ${TEMP_CONTAINER_NAME} pabuk/dev-python:$1
 echo ---------------------------------------
 docker container rm -f ${TEMP_CONTAINER_NAME} 2> /dev/null 1> /dev/null || true
 echo ---------------------------------------
-# docker push pabuk/dev-python:$1
+docker push pabuk/dev-python:$1

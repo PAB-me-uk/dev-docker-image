@@ -10,26 +10,6 @@
 
 Ensure your docker desktop is not the default WSL OS use `wsl --list ` and `wsl --set-default YOUR_OS_NAME_HERE` to choose the OS you installed from the microsoft store
 
-At a command prompt run `whl` to switch to your WLS OS
-
-If you dont already have your ssh keys in ~/.ssh copy using commands below
-
-```bash
-cp -Rv /mnt/c/Users/YOUR_WINDOWS_USERNAME/.ssh/ ~/.ssh/
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/*
-```
-
-Same for AWS config
-
-```bash
-cp -Rv /mnt/c/Users/YOUR_WINDOWS_USERNAME/.aws/ ~/.aws/
-chmod 700 ~/.aws
-chmod 700 ~/.aws/*
-```
-
-Alternatively you can alter `create-and-run-container.sh` to mount `/mnt/c/Users/YOUR_WINDOWS_USERNAME/.ssh/` and `/mnt/c/Users/YOUR_WINDOWS_USERNAME/.aws/` directly
-
 ## Mac Prerequisites
 
 [Docker Desktop](https://docs.docker.com/docker-for-mac/install/)
@@ -47,9 +27,10 @@ Install extensions
 The first two are required and the rest recommend for Python and Javascript development.
 
 ```bash
+# Required
 code --install-extension ms-azuretools.vscode-docker
 code --install-extension ms-vscode-remote.remote-containers
-
+# Recommended
 code --install-extension ms-python.python
 code --install-extension ms-python.vscode-pylance
 code --install-extension ms-toolsai.jupyter
@@ -73,44 +54,51 @@ Press ctrl+shift+p for command palette and choose "Preferences: Open Settings (J
 }
 ```
 
-## Checkout repo
+## Bootstrap first ever image
 
-***If using windows this must be done in your main WSL OS***
-
-```bash
-eval $(ssh-agent)
-ssh-add ~/.ssh/YOUR_SSH_KEYNAME
-git clone git@github.com:KCOM-Enterprise/Development-Tools.git
-cd Development-Tools/DevContainers
-```
-
-## Creating a new container
+### MacOs
 
 ```bash
-./build-create-and-run.sh my-container my-volume 3.8
+docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
 ```
 
-*Change my-xxx above to desired names, 3.8 is desired Python version.*
+### Windows
 
-*Note: you can mount the same volume to multiple containers*
+***This must be done in your main WSL OS (type `wsl` in command prompt)***
+
+Identify you windows user id via `ls /mnt/Users/` and replace YOUR_WINDOWS_USERNAME below
+
+```bash
+docker run --rm -it --env HOST_USER_HOME=/mnt/c/Users/YOUR_WINDOWS_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -n/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
+```
 
 ## Connect to container
 
 ```bash
-docker exec -it test-container zsh
+docker exec -it initial-container zsh
 ```
 
 Or use VSCode Docker and Remote Container Extensions to attach VSCode directly into container
 
 ![./images/vsc-open-container.png](./images/vsc-open-container.png)
 
-## Stop Container
+## Creating further containers
+
+Once you have a container made from the bootstrap process above you can simply create further containers from within the dev container itself as below
+
+```bash
+create-dev-container another-container another-volume 3.9
+```
+
+## Other commands
+
+### Stop Container
 
 ```
 docker stop test-container
 ```
 
-## Start Container
+### Start Container
 
 ```
 docker start test-container
