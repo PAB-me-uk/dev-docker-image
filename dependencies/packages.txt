@@ -13,3 +13,4 @@ zsh
 ruby
 terraform
 docker-ce-cli
+task-spooler
