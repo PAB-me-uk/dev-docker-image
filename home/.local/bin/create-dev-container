@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+
 if [[ $# -ne 3 ]]; then
     echo "$0: Three arguments are required: name for the new container, name of volume to mount, and python version (e.g. `3.6`)"
     echo "This builds the image, creates volume if it does not exist, then creates and runs container removing any existing container with same name"
@@ -23,6 +24,11 @@ echo Deleting any existing container with name: $1
 sudo docker container rm -f $1 2> /dev/null 1> /dev/null || true
 mkdir -p ~/.ssh
 mkdir -p ~/.aws
+
+if [[ -z "${NO_PULL}" ]]; then
+  echo Getting latest image
+  sudo docker pull pabuk/dev-python:$3
+fi
 
 echo Creating container with name: $1
 sudo docker container run -d \

@@ -1,0 +1,1 @@
+docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "NO_PULL=1 /home/dev/.local/bin/create-dev-container $1 $2 $3"
