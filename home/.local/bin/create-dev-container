@@ -7,18 +7,19 @@ if [[ $# -ne 3 ]]; then
     exit 4
 fi
 
-VOLUME_COUNT=$(sudo docker volume list -q | grep -Fxc $2) || true
-if [[ $VOLUME_COUNT -eq 0 ]]; then
-  echo Creating volume with name: $2
-  sudo docker volume create $1
-else
-  echo Volume already exists with name: $2
-fi
-echo Created volume with name $2
-IS_PODMAN=$(which docker | grep -c podman) || true
-if [[ $VOLUME_COUNT -eq 0 ]]; then
-  sudo docker run -it --rm --privileged --pid=host alpine:edge nsenter -t 1 -m -u -n -i bin/bash -c "chown 1000:1000 /var/lib/docker/volumes/$2/_data" || true
-fi
+# Disable, looks like container will be created by docker run if it doesnt exist
+# VOLUME_COUNT=$(sudo docker volume list -q | grep -Fxc $2) || true
+# if [[ $VOLUME_COUNT -eq 0 ]]; then
+#   echo Creating volume with name: $2
+#   sudo docker volume create $2
+#   echo Created volume with name $2
+# else
+#   echo Volume already exists with name: $2
+# fi
+# IS_PODMAN=$(which docker | grep -c podman) || true
+# if [[ $VOLUME_COUNT -eq 0 ]]; then
+#   sudo docker run -it --rm --privileged --pid=host alpine:edge nsenter -t 1 -m -u -n -i bin/bash -c "chown 1000:1000 /var/lib/docker/volumes/$2/_data" || true
+# fi
 
 echo Deleting any existing container with name: $1
 sudo docker container rm -f $1 2> /dev/null 1> /dev/null || true

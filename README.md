@@ -66,7 +66,7 @@ docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/r
 
 ***This must be done in your main WSL OS (type `wsl` in command prompt)***
 
-Identify you windows user id via `ls /mnt/Users/` and replace YOUR_WINDOWS_USERNAME below
+Identify you windows user id via `ls /mnt/c/Users/` and replace YOUR_WINDOWS_USERNAME below
 
 ```bash
 docker run --rm -it --env HOST_USER_HOME=/mnt/c/Users/YOUR_WINDOWS_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
@@ -90,22 +90,40 @@ Once you have a container made from the bootstrap process above you can simply c
 create-dev-container another-container another-volume 3.9
 ```
 
+## Important!
+
+Volume is mounted as `/workspace` files within this directory will be persisted unless you delete the volume
+
+Other paths within container will be lost if the container is removed or recreated.
+
 ## Other commands
 
 ### Stop Container
 
-```
+```bash
 docker stop test-container
 ```
 
 ### Start Container
 
-```
+```bash
 docker start test-container
 ```
 
-## Notes
+### Copy files to or from container
 
-Volume is mounted as `/workspace` files within this directory will be persisted unless you delete the volume
+```bash
+docker cp /wherever/this.txt container-name:/home/dev/
 
-Other paths within container will be lost if the container is removed or recreated.
+docker cp container-name:/home/dev/this.txt /wherever/
+```
+
+## Customisation
+
+### Aliases
+
+Create files containing your aliases (and any other zsh customisation) in `~/.zsh-extra` any files found will be picked up when you next open a terminal.
+
+### Further customisation of image
+
+This is currently under development

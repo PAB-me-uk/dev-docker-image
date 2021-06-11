@@ -1,6 +1,6 @@
-ARG PYTHON_VERSION=3.9
-FROM python:${PYTHON_VERSION}
-
+ARG IMAGE_PYTHON_VERSION=3.9
+FROM python:${IMAGE_PYTHON_VERSION}
+ENV EXPECTED_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
 ARG USER_NAME=dev
 ARG GROUP_NAME=${USER_NAME}
 ARG USER_HOME=/home/${USER_NAME}
@@ -64,12 +64,15 @@ COPY --chown=${USER_UID} home/. ${USER_HOME}/
 #    Configure awsume
 #    Install python dependencies
 #    Install nvm & nodejs lts
-#    Prevent vscode touching know_hosts
-RUN su - ${USER_NAME} -c "printf \"zsh\" >> ~/.bashrc \
+#    Prevent vscode touching known_hosts
+RUN su - ${USER_NAME} -c "printf \"zsh\\n\" >> ~/.bashrc \
     && grep -v \"^ *#\" ${DEPENDENCIES}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {} \
     && sudo rm ${DEPENDENCIES}/pipx.txt \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && sudo ln -s ${USER_HOME}/.local/bin/cfn-lint /usr/local/bin/cfn-lint \
+    && sudo ln -s ${USER_HOME}/.local/bin/prospector /usr/local/bin/prospector \
+    && sudo ln -s ${USER_HOME}/.local/bin/autopep8 /usr/local/bin/autopep8 \
+    && sudo ln -s ${USER_HOME}/.local/bin/check-container.py /usr/local/bin/check-container \
     && chmod +x ${USER_HOME}/.local/bin/fixgit \
     && chmod +x ${USER_HOME}/.local/bin/versions \
     && pip install -r ${DEPENDENCIES}/requirements.txt --user --no-warn-script-location --no-cache-dir \

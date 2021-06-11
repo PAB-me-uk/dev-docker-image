@@ -9,4 +9,4 @@ echo Building image with python version: $1
 
 export DOCKER_BUILDKIT=0
 export COMPOSE_DOCKER_CLI_BUILD=0
-docker build . -t dev-container-image-python:$1 --build-arg PYTHON_VERSION=$1
+docker build . -t dev-container-image-python:$1 --build-arg IMAGE_PYTHON_VERSION=$1
