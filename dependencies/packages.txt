@@ -1,3 +1,4 @@
+# Place apt package names to install below, one per line.
 apt-utils
 gnupg
 software-properties-common

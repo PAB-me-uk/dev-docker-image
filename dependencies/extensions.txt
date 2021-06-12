@@ -1,3 +1,5 @@
+# Place Visual Studio Code extension below, one per line.
+
 ms-python.python
 ms-python.vscode-pylance
 ms-toolsai.jupyter
@@ -10,3 +12,5 @@ streetsidesoftware.code-spell-checker
 ryu1kn.partial-diff
 moshfeu.compare-folders
 oderwat.indent-rainbow
+
+# Hint: type `code --list-extensions` in a terminal to get list.

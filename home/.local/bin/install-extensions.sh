@@ -1,16 +1,22 @@
 #!/bin/bash
+set -e
 
-if [[ -f /tmp/dependencies/extensions.txt ]]; then
+install_extensions_from_file () {
+  file=$1
+  if [[ -f $file ]]; then
     which code > /dev/null
     if [[ $? -eq 0 ]]; then
-      set -e
-      while IFS="" read -r p || [ -n "$p" ]
+      echo "Installing extensions from file $file"
+      while IFS="" read -r line || [ -n "$line" ]
       do
-        if [[ ! -z "$p" ]]
-          then
-            code --install-extension $p
+        if [[ ! -z "$line" ]] && ! [[ "$line" =~ "^ *#.*$" ]]; then
+            code --install-extension $line
         fi
-      done < /tmp/dependencies/extensions.txt
-      sudo rm /tmp/dependencies/extensions.txt
+      done < $file
+      sudo rm $file
+    fi
   fi
-fi
+}
+
+install_extensions_from_file /tmp/dependencies/extensions.txt
+install_extensions_from_file /tmp/custom-dependencies/extensions.txt

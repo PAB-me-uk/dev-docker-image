@@ -1,15 +1,27 @@
 ARG IMAGE_PYTHON_VERSION=3.9
 FROM python:${IMAGE_PYTHON_VERSION}
-ENV EXPECTED_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
 ARG USER_NAME=dev
 ARG GROUP_NAME=${USER_NAME}
 ARG USER_HOME=/home/${USER_NAME}
 ARG USER_UID=1000
 ARG USER_GID=1000
-ARG DEPENDENCIES=/tmp/dependencies
-ARG WORKSPACE=/workspace
+ARG DEPENDENCIES_DIR=/tmp/dependencies
+ARG WORKSPACE_DIR=/workspace
+ARG CUSTOMISE_DIR=${USER_HOME}/customise
 
-COPY dependencies/* ${DEPENDENCIES}/
+# Expose as envars for use in container or in child images
+ENV IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
+ENV IMAGE_USER_NAME=${USER_NAME}
+ENV IMAGE_GROUP_NAME=${GROUP_NAME}
+ENV IMAGE_USER_HOME=${USER_HOME}
+ENV IMAGE_USER_UID=${USER_UID}
+ENV IMAGE_USER_GID=${USER_GID}
+ENV IMAGE_WORKSPACE_DIR=${WORKSPACE_DIR}
+ENV IMAGE_CUSTOMISE_DIR=${CUSTOMISE_DIR}
+
+COPY dependencies/* ${DEPENDENCIES_DIR}/
+
+SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && cd /tmp \
@@ -23,8 +35,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
     && apt-get update \
     # Install packages
-    && grep -v "^ *#" ${DEPENDENCIES}/packages.txt | xargs apt-get install -y \
-    && rm ${DEPENDENCIES}/packages.txt \
+    && set -o pipefail && grep -v "^ *#" ${DEPENDENCIES_DIR}/packages.txt | xargs apt-get install -y \
+    && rm ${DEPENDENCIES_DIR}/packages.txt \
     && apt-get clean \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
@@ -42,10 +54,10 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     # Install cfn-nag
     && gem install cfn-nag \
     # Configure workspace
-    && mkdir ${WORKSPACE} \
-    && chown ${USER_UID}:${USER_GID} ${WORKSPACE} \
-    && chmod 0755 ${WORKSPACE} \
-    && chmod g+s ${WORKSPACE} \
+    && mkdir ${WORKSPACE_DIR} \
+    && chown ${USER_UID}:${USER_GID} ${WORKSPACE_DIR} \
+    && chmod 0755 ${WORKSPACE_DIR} \
+    && chmod g+s ${WORKSPACE_DIR} \
     # Configure ~/.ssh
     && mkdir ${USER_HOME}/.ssh \
     && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.ssh \
@@ -55,19 +67,19 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.aws \
     && chmod 0700 ${USER_HOME}/.aws
 
-# Copy files to user home
+# Copy files to user home, including subdirectories
 COPY --chown=${USER_UID} home/. ${USER_HOME}/
 
 # Run as user
-#    Switch to zsh
-#    Install pipx depedancies
-#    Configure awsume
-#    Install python dependencies
-#    Install nvm & nodejs lts
-#    Prevent vscode touching known_hosts
+#   Switch to zsh
+#   Install pipx depedancies
+#   Configure awsume
+#   Install python dependencies
+#   Install nvm & nodejs lts
+#   Prevent vscode touching known_hosts
 RUN su - ${USER_NAME} -c "printf \"zsh\\n\" >> ~/.bashrc \
-    && grep -v \"^ *#\" ${DEPENDENCIES}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {} \
-    && sudo rm ${DEPENDENCIES}/pipx.txt \
+    && set -o pipefail && grep -v \"^ *#\" ${DEPENDENCIES_DIR}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {} \
+    && sudo rm ${DEPENDENCIES_DIR}/pipx.txt \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && sudo ln -s ${USER_HOME}/.local/bin/cfn-lint /usr/local/bin/cfn-lint \
     && sudo ln -s ${USER_HOME}/.local/bin/prospector /usr/local/bin/prospector \
@@ -75,8 +87,8 @@ RUN su - ${USER_NAME} -c "printf \"zsh\\n\" >> ~/.bashrc \
     && sudo ln -s ${USER_HOME}/.local/bin/check-container.py /usr/local/bin/check-container \
     && chmod +x ${USER_HOME}/.local/bin/fixgit \
     && chmod +x ${USER_HOME}/.local/bin/versions \
-    && pip install -r ${DEPENDENCIES}/requirements.txt --user --no-warn-script-location --no-cache-dir \
-    && sudo rm ${DEPENDENCIES}/requirements.txt \
+    && pip install -r ${DEPENDENCIES_DIR}/requirements.txt --user --no-warn-script-location --no-cache-dir \
+    && sudo rm ${DEPENDENCIES_DIR}/requirements.txt \
     && cd /tmp \
     && wget -nv https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
     && zsh install.sh \
@@ -88,6 +100,7 @@ RUN su - ${USER_NAME} -c "printf \"zsh\\n\" >> ~/.bashrc \
     && rm install.sh \
     && touch ${USER_HOME}/.ssh/known_hosts"
 
+# Run container as user
 USER ${USER_NAME}
+# Keep container running
 CMD ["tail", "-f", "/dev/null"]
-
