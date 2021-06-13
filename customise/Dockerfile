@@ -17,24 +17,20 @@ COPY dependencies/* ${DEPENDENCIES_DIR}/
 SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
-    && cd /tmp \
-    && apt-get update\
-    # Install packages
-    && grep -v "^ *#" ${DEPENDENCIES_DIR}/packages.txt | xargs apt-get install -y \
-    && rm ${DEPENDENCIES_DIR}/packages.txt \
-    && apt-get clean
+    && install-apt-packages.sh ${DEPENDENCIES_DIR}/packages.txt
 
 # Copy files to user home, including subdirectories
 COPY --chown=${IMAGE_USER_UID} home/. ${IMAGE_USER_HOME}/
 
+SHELL ["/bin/zsh", "-c"]
+
 # Run as user
 #   Install pipx depedancies
 #   Install python dependencies
-RUN su - ${IMAGE_USER_NAME} -c "printf \"zsh\\n\" >> ~/.bashrc \
-    && grep -v \"^ *#\" ${DEPENDENCIES_DIR}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {} \
-    && sudo rm ${DEPENDENCIES_DIR}/pipx.txt \
-    && pip install -r ${DEPENDENCIES_DIR}/requirements.txt --user --no-warn-script-location --no-cache-dir \
-    && sudo rm ${DEPENDENCIES_DIR}/requirements.txt"
+RUN su - ${IMAGE_USER_NAME} -c "\
+    install-pipx-packages.sh ${DEPENDENCIES_DIR}/pipx.txt \
+    install-pip-packages.sh ${DEPENDENCIES_DIR}/requirements.txt \
+"
 
 # Run container as user
 USER ${IMAGE_USER_NAME}

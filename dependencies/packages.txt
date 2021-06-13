@@ -1,7 +1,6 @@
 # Place apt package names to install below, one per line.
-apt-utils
-gnupg
 software-properties-common
+gnupg
 less
 man
 nano
@@ -12,6 +11,4 @@ sudo
 tree
 zsh
 ruby
-terraform
-docker-ce-cli
 task-spooler

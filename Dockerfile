@@ -5,7 +5,7 @@ ARG GROUP_NAME=${USER_NAME}
 ARG USER_HOME=/home/${USER_NAME}
 ARG USER_UID=1000
 ARG USER_GID=1000
-ARG DEPENDENCIES_DIR=/tmp/dependencies
+ARG DEPENDENCIES_DIR=/var/dependencies
 ARG WORKSPACE_DIR=/workspace
 ARG CUSTOMISE_DIR=${USER_HOME}/customise
 
@@ -19,31 +19,23 @@ ENV IMAGE_USER_GID=${USER_GID}
 ENV IMAGE_WORKSPACE_DIR=${WORKSPACE_DIR}
 ENV IMAGE_CUSTOMISE_DIR=${CUSTOMISE_DIR}
 
-COPY dependencies/* ${DEPENDENCIES_DIR}/
+COPY dependencies/packages.txt ${DEPENDENCIES_DIR}/
+COPY bin/install-apt-packages.sh /usr/local/bin/
 
 SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
-    && cd /tmp \
-    && apt-get update && apt-get install -y apt-utils software-properties-common \
     # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
     && apt-get purge -y imagemagick imagemagick-6-common \
-    # Add extra repositries
+    # Install packages
+    && install-apt-packages.sh ${DEPENDENCIES_DIR}/packages.txt \
+    # Install Terraform and Docker
     && wget -nv https://apt.releases.hashicorp.com/gpg && apt-key add gpg && rm gpg \
     && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
     && wget -nv https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
     && apt-get update \
-    # Install packages
-    && set -o pipefail && grep -v "^ *#" ${DEPENDENCIES_DIR}/packages.txt | xargs apt-get install -y \
-    && rm ${DEPENDENCIES_DIR}/packages.txt \
-    && apt-get clean \
-    # Create user and group, allow sudo
-    && groupadd --gid ${USER_GID} ${GROUP_NAME} \
-    && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
-    && usermod --groups sudo  --shell /usr/bin/zsh ${USER_NAME} \
-    && echo "${USER_NAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
-    && chmod 0440 /etc/sudoers.d/${USER_NAME} \
+    && apt-get install -y terraform docker-ce-cli \
     # Install AWS CLI
     && cd /tmp \
     && wget -nv https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
@@ -53,6 +45,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -rf /tmp/aws \
     # Install cfn-nag
     && gem install cfn-nag \
+    # Create user and group, allow sudo
+    && groupadd --gid ${USER_GID} ${GROUP_NAME} \
+    && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
+    && usermod --groups sudo  --shell /usr/bin/zsh ${USER_NAME} \
+    && echo "${USER_NAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
+    && chmod 0440 /etc/sudoers.d/${USER_NAME} \
     # Configure workspace
     && mkdir ${WORKSPACE_DIR} \
     && chown ${USER_UID}:${USER_GID} ${WORKSPACE_DIR} \
@@ -70,6 +68,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # Copy files to user home, including subdirectories
 COPY --chown=${USER_UID} home/. ${USER_HOME}/
 
+COPY dependencies/* ${DEPENDENCIES_DIR}/
+
+COPY bin/* /usr/local/bin/
+
+SHELL ["/bin/zsh", "-c"]
+
 # Run as user
 #   Switch to zsh
 #   Install pipx depedancies
@@ -77,28 +81,25 @@ COPY --chown=${USER_UID} home/. ${USER_HOME}/
 #   Install python dependencies
 #   Install nvm & nodejs lts
 #   Prevent vscode touching known_hosts
-RUN su - ${USER_NAME} -c "printf \"zsh\\n\" >> ~/.bashrc \
-    && set -o pipefail && grep -v \"^ *#\" ${DEPENDENCIES_DIR}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {} \
-    && sudo rm ${DEPENDENCIES_DIR}/pipx.txt \
+RUN su - ${USER_NAME} -c "\
+    export PATH=\"${USER_HOME}/.local/bin/:${PATH}\" \
+    && printf \"zsh\\n\" >> ~/.bashrc \
+    && pip install --user --no-cache-dir -r ${DEPENDENCIES_DIR}/requirements.txt \
+    && install-pipx-packages.sh ${DEPENDENCIES_DIR}/pipx.txt \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
     && sudo ln -s ${USER_HOME}/.local/bin/cfn-lint /usr/local/bin/cfn-lint \
     && sudo ln -s ${USER_HOME}/.local/bin/prospector /usr/local/bin/prospector \
     && sudo ln -s ${USER_HOME}/.local/bin/autopep8 /usr/local/bin/autopep8 \
     && sudo ln -s ${USER_HOME}/.local/bin/check-container.py /usr/local/bin/check-container \
-    && chmod +x ${USER_HOME}/.local/bin/fixgit \
-    && chmod +x ${USER_HOME}/.local/bin/versions \
-    && pip install -r ${DEPENDENCIES_DIR}/requirements.txt --user --no-warn-script-location --no-cache-dir \
-    && sudo rm ${DEPENDENCIES_DIR}/requirements.txt \
     && cd /tmp \
     && wget -nv https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
-    && zsh install.sh \
-    && zsh \
+    && zsh ./install.sh \
     && . ~/.nvm/nvm.sh \
     && nvm install --lts \
     && nvm alias default node \
     && nvm cache clear \
     && rm install.sh \
-    && touch ${USER_HOME}/.ssh/known_hosts"
+"
 
 # Run container as user
 USER ${USER_NAME}
