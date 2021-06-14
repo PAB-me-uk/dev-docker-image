@@ -7,9 +7,14 @@ if [[ $# -ne 3 ]]; then
     exit 4
 fi
 
+if [[ -z "${NO_PULL}" ]]; then
+  echo Getting latest image
+  sudo docker pull pabuk/dev-python:$3
+fi
+
 export DOCKER_BUILDKIT=0
 export COMPOSE_DOCKER_CLI_BUILD=0
-docker build . -t custom-dev-python:$3 --build-arg IMAGE_PYTHON_VERSION=$3
+sudo docker build . -t custom-dev-python:$3 --build-arg IMAGE_PYTHON_VERSION=$3
 
 # Disable, looks like container will be created by docker run if it doesnt exist
 # VOLUME_COUNT=$(sudo docker volume list -q | grep -Fxc $2) || true
@@ -29,11 +34,6 @@ echo Deleting any existing container with name: $1
 sudo docker container rm -f $1 2> /dev/null 1> /dev/null || true
 mkdir -p ~/.ssh
 mkdir -p ~/.aws
-
-if [[ -z "${NO_PULL}" ]]; then
-  echo Getting latest image
-  sudo docker pull pabuk/dev-python:$3
-fi
 
 echo Creating container with name: $1
 sudo docker container run -d \

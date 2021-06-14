@@ -36,7 +36,7 @@ fi
 
 
 # Install vscode extensions
-tsp ~/.local/bin/install-extensions.sh > /dev/null
+tsp /usr/local/bin/install-vscode-extensions.sh > /dev/null
 
 export PATH="/home/dev/.local/bin/:$PATH"
 fixgit

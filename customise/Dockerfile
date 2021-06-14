@@ -1,7 +1,7 @@
 ARG IMAGE_PYTHON_VERSION=3.9
 FROM pabuk/dev-python:${IMAGE_PYTHON_VERSION}
 # DEPENDENCIES_DIR Must not be same as main image (/tmp/dependencies)as will clash
-ARG DEPENDENCIES_DIR=/tmp/custom-dependencies
+ARG DEPENDENCIES_DIR=/var/custom-dependencies
 
 # Environmental variables available to use in this file from parent image
 # IMAGE_USER_NAME
@@ -11,6 +11,8 @@ ARG DEPENDENCIES_DIR=/tmp/custom-dependencies
 # IMAGE_USER_GID
 # IMAGE_WORKSPACE_DIR
 # IMAGE_CUSTOMISE_DIR
+
+USER root
 
 COPY dependencies/* ${DEPENDENCIES_DIR}/
 
@@ -28,9 +30,10 @@ SHELL ["/bin/zsh", "-c"]
 #   Install pipx depedancies
 #   Install python dependencies
 RUN su - ${IMAGE_USER_NAME} -c "\
-    install-pipx-packages.sh ${DEPENDENCIES_DIR}/pipx.txt \
-    install-pip-packages.sh ${DEPENDENCIES_DIR}/requirements.txt \
+    pip install --user --no-cache-dir -r ${DEPENDENCIES_DIR}/requirements.txt \
+    && install-pipx-packages.sh ${DEPENDENCIES_DIR}/pipx.txt \
 "
+
 
 # Run container as user
 USER ${IMAGE_USER_NAME}

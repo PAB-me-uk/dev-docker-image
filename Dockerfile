@@ -101,6 +101,9 @@ RUN su - ${USER_NAME} -c "\
     && rm install.sh \
 "
 
+# Copy customisation files to user home
+COPY --chown=${USER_UID} customise/. ${USER_HOME}/customise/
+
 # Run container as user
 USER ${USER_NAME}
 # Keep container running
