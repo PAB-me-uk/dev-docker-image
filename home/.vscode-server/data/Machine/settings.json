@@ -3,6 +3,7 @@
   "python.formatting.autopep8Path": "/home/dev/.local/bin/autopep8",
   "cfnLint.path": "/home/dev/.local/bin/cfn-lint",
   "cfnLint.validateUsingJsonSchema": false,
+  "cfnNagLint.path": "/usr/local/bin/cfn_nag",
   "files.associations": {
     "*.template": "json",
     "*.stacks": "yaml"
