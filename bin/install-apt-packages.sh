@@ -8,8 +8,14 @@ if [[ ! -f ${file} ]]; then
   exit 1
 fi
 
+
+
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends apt-utils
-grep -v "^ *#" ${file} | xargs apt-get install -y
+
+count=$(grep -cv '^\s*$\|^\s*\#' ${file}) || true
+if [[ ${count} -ne 0 ]]; then
+  grep -v '^\s*$\|^\s*\#' ${file} | xargs apt-get install -y
+fi
 apt-get clean

@@ -8,4 +8,7 @@ if [[ ! -f $file ]]; then
   exit 1
 fi
 
-grep -v "^ *#" ${file} | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {}
+count=$(grep -cv '^\s*$\|^\s*\#' ${file}) || true
+if [[ ${count} -ne 0 ]]; then
+  grep -v '^\s*$\|^\s*\#' ${file} | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {}
+fi

@@ -1,4 +1,7 @@
 {
+  "python.linting.prospectorPath": "/home/dev/.local/bin/prospector",
+  "python.formatting.autopep8Path": "/home/dev/.local/bin/autopep8",
+  "cfnLint.path": "/home/dev/.local/bin/cfn-lint",
   "cfnLint.validateUsingJsonSchema": false,
   "files.associations": {
     "*.template": "json",
