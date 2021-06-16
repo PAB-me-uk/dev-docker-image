@@ -126,4 +126,46 @@ Create files containing your aliases (and any other zsh customisation) in `~/.zs
 
 ### Further customisation of image
 
-This is currently under development
+You can create a customised version by following the steps below, this example uses Visual Studio Code, but this is not a requirement.
+
+From within an existing dev container:
+
+```bash
+code ~/customise
+```
+
+This will open a new window to the same container pointing to the customisation files with the structure below:
+
+```
+/home/dev/customise
+├── Dockerfile
+├── create-custom-dev-container.sh
+├── dependencies
+│   ├── extensions.txt
+│   ├── packages.txt
+│   ├── pipx.txt
+│   └── requirements.txt
+└── home
+```
+
+Update files within the `/home/dev/customise` directory as below:
+
+| File | Usage |
+| ---- | ----  |
+| /dependencies/packages.txt | Add any additional APT packages here. |
+| /dependencies/requirements.txt | Add any additional Python PIP packages here. |
+| /dependencies/pipx.txt | Add any additional Python PIPX packages (stand alone Python utilities) here. |
+| /dependencies/extensions.txt | Add any additional Visual Studio Code extensions here, use command `code --list-extensions` from outside container to get correct name for an extension. |
+| /home (directory) | Any files and folders placed in `/home` will be recursively copied to `/home/dev/` in the new custom container. You can use this to override any of the existing files from the original image. |
+| /Dockerfile | Optionally add you own custom steps here as per [the documentation](https://docs.docker.com/engine/reference/builder/). |
+
+Run the command below to create a new custom dev container:
+
+```bash
+cd ~/customise
+./create-custom-dev-container.sh custom-container-name volume-name 3.9
+```
+
+*Replace `3.9` above with desired Python version*
+
+Note: You may wish to backup or version control your changes to the customisation files, as a minimum it is worth copying them to a volume e.g. `/workspace/`
