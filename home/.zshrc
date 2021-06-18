@@ -39,6 +39,7 @@ fi
 tsp /usr/local/bin/install-vscode-extensions.sh > /dev/null
 
 export PATH="/home/dev/.local/bin/:$PATH"
+. python-to-workspace
 fixgit
 
 SSH_AGENT_LINES=$(ps aux | grep ssh-agent | grep -v "<defunct>" | wc -l)

@@ -1,0 +1,14 @@
+__venv_path=/workspace/.python/${IMAGE_PYTHON_VERSION}
+__venv_path_activate=${__venv_path}/bin/activate
+
+VIRTUAL_ENV_DISABLE_PROMPT=1
+
+if [ -f ${__venv_path_activate} ]; then
+  . ${__venv_path_activate}
+else
+  /usr/local/bin/python -m venv ${__venv_path}
+  . ${__venv_path_activate}
+  python -m pip install --upgrade pip
+fi
+
+unset __venv_path __venv_path_activate

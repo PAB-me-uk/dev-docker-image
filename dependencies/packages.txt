@@ -6,7 +6,6 @@ man
 nano
 vim
 pipx
-python3-venv
 sudo
 tree
 zsh

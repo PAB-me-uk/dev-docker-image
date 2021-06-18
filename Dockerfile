@@ -1,5 +1,7 @@
 ARG IMAGE_PYTHON_VERSION=3.9
+# Arguments added above the FROM line are not available after the FROM line unless redefined after
 FROM python:${IMAGE_PYTHON_VERSION}
+ARG IMAGE_PYTHON_VERSION=3.9
 ARG USER_NAME=dev
 ARG GROUP_NAME=${USER_NAME}
 ARG USER_HOME=/home/${USER_NAME}
