@@ -15,9 +15,11 @@ TEMP_VOLUME_NAME=temp-volume-for-check-container-${IMAGE_PYTHON_VERSION}
 echo Building image ${IMAGE_NAME} with python version: ${IMAGE_PYTHON_VERSION}
 export DOCKER_BUILDKIT=0
 export COMPOSE_DOCKER_CLI_BUILD=0
-docker build . -t ${IMAGE_NAME} --build-arg IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
-echo ---------------------------------------
-echo Testing container
-docker container run --rm -it --mount type=volume,source=${TEMP_VOLUME_NAME},target=/workspace ${IMAGE_NAME} bin/zsh -c "source ~/.zshrc && check-container"
-docker volume rm -f ${TEMP_VOLUME_NAME} 2> /dev/null 1> /dev/null || true
-echo Image ${IMAGE_NAME} built successfully
+time docker build . -t ${IMAGE_NAME} --build-arg IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
+if [[ -z "${NO_TEST}" ]]; then
+  echo ---------------------------------------
+  echo Testing container
+  docker container run --rm -it --mount type=volume,source=${TEMP_VOLUME_NAME},target=/workspace ${IMAGE_NAME} bin/zsh -c "source ~/.zshrc && check-container"
+  docker volume rm -f ${TEMP_VOLUME_NAME} 2> /dev/null 1> /dev/null || true
+  echo Image ${IMAGE_NAME} built successfully
+fi

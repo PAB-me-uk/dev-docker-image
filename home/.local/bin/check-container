@@ -17,11 +17,21 @@ EXPECTED_USER_HOME = '/home/dev'
 
 class Tests(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.workspace_dir = os.environ.get('IMAGE_WORKSPACE_DIR')
+        cls.python_version = os.environ.get('IMAGE_PYTHON_VERSION')
+        cls.user_name = os.environ.get('IMAGE_USER_NAME')
+        cls.user_home = os.environ.get('IMAGE_USER_HOME')
+
     def setUp(self) -> None:
         print(self._testMethodName)
         return super().setUp()
 
-    def shell(self, command, environment=os.environ):
+    def shell(self, command, environment=None):
+        if environment is None:
+            environment = os.environ
+
         split_command = shlex.split(command)
         try:
             output = subprocess.check_output(  # nosec
@@ -33,7 +43,9 @@ class Tests(unittest.TestCase):
         except subprocess.CalledProcessError as e:
             return (False, e.output.decode())
 
-    def shell_can_access(self, shell, command, environment={}):
+    def shell_can_access(self, shell, command, environment=None):
+        if environment is None:
+            environment = {}
         full_command = f'{shell} -c "{command}"'
         success, output = self.shell(
             command=full_command,
@@ -76,6 +88,22 @@ class Tests(unittest.TestCase):
         except Exception as e:
             self.fail(f'Failed to delete file {file} due to exception: {e}')
 
+    def test__environmental_variables(self):
+        envars = [
+            'IMAGE_CUSTOMISE_DIR',
+            'IMAGE_GROUP_NAME',
+            'IMAGE_PYTHON_VERSION',
+            'IMAGE_USER_GID',
+            'IMAGE_USER_HOME',
+            'IMAGE_USER_NAME',
+            'IMAGE_USER_UID',
+            'IMAGE_WORKSPACE_DIR'
+        ]
+
+        for envar in envars:
+            self.assertIn(envar, os.environ)
+            self.assertNotEqual('', os.environ[envar])
+
     def test_user_name(self):
         self.assertEqual(EXPECTED_USER_NAME, pwd.getpwuid(os.getuid())[0])
 
@@ -103,12 +131,18 @@ class Tests(unittest.TestCase):
         self.file_creation_perms_and_deletion(EXPECTED_USER_HOME)
 
     def test_python(self):
-        self.assertEqual('/usr/local/bin/python', shutil.which('python'))
+        self.assertEqual(
+            f'{self.workspace_dir}/.python/{self.python_version}/bin/python',
+            shutil.which('python')
+        )
         self.assertEqual('3.', sys.version[:2])
         self.all_shells_can_access('python --version')
 
     def test_pip(self):
-        self.assertEqual('/usr/local/bin/pip', shutil.which('pip'))
+        self.assertEqual(
+            f'{self.workspace_dir}/.python/{self.python_version}/bin/pip',
+            shutil.which('pip')
+        )
         self.all_shells_can_access('pip --version')
 
     def test_node(self):
@@ -120,7 +154,11 @@ class Tests(unittest.TestCase):
 
     def test_aws_cli(self):
         self.assertEqual('/usr/local/bin/aws', shutil.which('aws'))
-        self.zsh_can_access('aws --version')
+        self.all_shells_can_access('aws --version')
+
+    def test_sam_cli(self):
+        self.assertEqual('/usr/local/bin/sam', shutil.which('sam'))
+        self.all_shells_can_access('sam --version')
 
     def test_awsume(self):
         self.assertEqual('/home/dev/.local/bin/awsume', shutil.which('awsume'))
@@ -132,15 +170,15 @@ class Tests(unittest.TestCase):
 
     def test_prospector(self):
         self.assertEqual('/home/dev/.local/bin/prospector', shutil.which('prospector'))
-        self.all_shells_can_access('prospector --version')
+        self.zsh_can_access('prospector --version')
 
     def test_autopep8(self):
         self.assertEqual('/home/dev/.local/bin/autopep8', shutil.which('autopep8'))
-        self.all_shells_can_access('autopep8 --version')
+        self.zsh_can_access('autopep8 --version')
 
     def test_cfn_lint(self):
         self.assertEqual('/home/dev/.local/bin/cfn-lint', shutil.which('cfn-lint'))
-        self.all_shells_can_access('cfn-lint --version')
+        self.zsh_can_access('cfn-lint --version')
 
     def test_cfn_nag(self):
         self.assertEqual('/usr/local/bin/cfn_nag', shutil.which('cfn_nag'))

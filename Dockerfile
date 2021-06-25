@@ -5,21 +5,29 @@ ARG IMAGE_PYTHON_VERSION=3.9
 ARG USER_NAME=dev
 ARG GROUP_NAME=${USER_NAME}
 ARG USER_HOME=/home/${USER_NAME}
+ARG USER_HOME_BIN=${USER_HOME}/.local/bin
 ARG USER_UID=1000
 ARG USER_GID=1000
 ARG DEPENDENCIES_DIR=/var/dependencies
 ARG WORKSPACE_DIR=/workspace
+ARG WORKSPACE_TEMPLATE_DIR=/.workspace
 ARG CUSTOMISE_DIR=${USER_HOME}/customise
+ARG PYTHON_VENV_DIR=${WORKSPACE_DIR}/.python/${IMAGE_PYTHON_VERSION}
+ARG PYTHON_VENV_TEMPLATE_DIR=${WORKSPACE_TEMPLATE_DIR}/.python/${IMAGE_PYTHON_VERSION}
 
 # Expose as envars for use in container or in child images
 ENV IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
 ENV IMAGE_USER_NAME=${USER_NAME}
 ENV IMAGE_GROUP_NAME=${GROUP_NAME}
 ENV IMAGE_USER_HOME=${USER_HOME}
+ENV IMAGE_USER_HOME_BIN=${USER_HOME_BIN}
 ENV IMAGE_USER_UID=${USER_UID}
 ENV IMAGE_USER_GID=${USER_GID}
 ENV IMAGE_WORKSPACE_DIR=${WORKSPACE_DIR}
+ENV IMAGE_WORKSPACE_TEMPLATE_DIR=${WORKSPACE_TEMPLATE_DIR}
 ENV IMAGE_CUSTOMISE_DIR=${CUSTOMISE_DIR}
+ENV IMAGE_PYTHON_VENV_DIR=${PYTHON_VENV_DIR}
+ENV IMAGE_PYTHON_VENV_TEMPLATE_DIR=${PYTHON_VENV_TEMPLATE_DIR}
 
 COPY dependencies/packages.txt ${DEPENDENCIES_DIR}/
 COPY bin/install-apt-packages.sh /usr/local/bin/
@@ -32,19 +40,25 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     # Install packages
     && install-apt-packages.sh ${DEPENDENCIES_DIR}/packages.txt \
     # Install Terraform and Docker
-    && wget -nv https://apt.releases.hashicorp.com/gpg && apt-key add gpg && rm gpg \
+    && wget -q https://apt.releases.hashicorp.com/gpg && apt-key add gpg && rm gpg \
     && apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-    && wget -nv https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
+    && wget -q https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
     && apt-get update \
     && apt-get install -y terraform docker-ce-cli \
     # Install AWS CLI
     && cd /tmp \
-    && wget -nv https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
+    && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
     && unzip -q awscli-exe-linux-x86_64.zip \
     && rm awscli-exe-linux-x86_64.zip \
     && /bin/bash ./aws/install \
-    && rm -rf /tmp/aws \
+    && rm -rf ./aws \
+    # Install AWS SAM CLI
+    && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip \
+    && unzip -q aws-sam-cli-linux-x86_64.zip -d sam-installation \
+    && rm aws-sam-cli-linux-x86_64.zip \
+    && /bin/bash ./sam-installation/install \
+    && rm -rf ./sam-installation \
     # Install cfn-nag
     && gem install cfn-nag \
     # Create user and group, allow sudo
@@ -58,6 +72,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && chown ${USER_UID}:${USER_GID} ${WORKSPACE_DIR} \
     && chmod 0755 ${WORKSPACE_DIR} \
     && chmod g+s ${WORKSPACE_DIR} \
+    # Configure workspace template
+    && mkdir ${WORKSPACE_TEMPLATE_DIR} \
+    && chown ${USER_UID}:${USER_GID} ${WORKSPACE_TEMPLATE_DIR} \
+    && chmod 0755 ${WORKSPACE_TEMPLATE_DIR} \
+    && chmod g+s ${WORKSPACE_TEMPLATE_DIR} \
     # Configure ~/.ssh
     && mkdir ${USER_HOME}/.ssh \
     && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.ssh \
@@ -78,23 +97,24 @@ SHELL ["/bin/zsh", "-c"]
 
 # Run as user
 #   Switch to zsh
+#   Install python dependencies
 #   Install pipx depedancies
 #   Configure awsume
-#   Install python dependencies
 #   Install nvm & nodejs lts
-#   Prevent vscode touching known_hosts
 RUN su - ${USER_NAME} -c "\
     export PATH=\"${USER_HOME}/.local/bin/:${PATH}\" \
     && printf \"zsh\\n\" >> ~/.bashrc \
-    && pip install --user --no-cache-dir -r ${DEPENDENCIES_DIR}/requirements.txt \
+    && /usr/local/bin/python -m venv ${PYTHON_VENV_DIR} \
+    && source ${PYTHON_VENV_DIR}/bin/activate \
+    && python -m pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r ${DEPENDENCIES_DIR}/requirements.txt \
+    && mkdir -p ${WORKSPACE_TEMPLATE_DIR}/.python \
     && install-pipx-packages.sh ${DEPENDENCIES_DIR}/pipx.txt \
+    && pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' --include-deps jupyter \
+    && mv -v ${PYTHON_VENV_DIR} ${WORKSPACE_TEMPLATE_DIR}/.python \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
-    && sudo ln -s ${USER_HOME}/.local/bin/cfn-lint /usr/local/bin/cfn-lint \
-    && sudo ln -s ${USER_HOME}/.local/bin/prospector /usr/local/bin/prospector \
-    && sudo ln -s ${USER_HOME}/.local/bin/autopep8 /usr/local/bin/autopep8 \
-    && sudo ln -s ${USER_HOME}/.local/bin/check-container.py /usr/local/bin/check-container \
     && cd /tmp \
-    && wget -nv https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
+    && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
     && zsh ./install.sh \
     && . ~/.nvm/nvm.sh \
     && nvm install --lts \

@@ -8,8 +8,6 @@ if [[ ! -f ${file} ]]; then
   exit 1
 fi
 
-
-
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends apt-utils

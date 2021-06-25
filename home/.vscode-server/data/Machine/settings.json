@@ -1,7 +1,8 @@
 {
-  "python.linting.prospectorPath": "/home/dev/.local/bin/prospector",
-  "python.formatting.autopep8Path": "/home/dev/.local/bin/autopep8",
-  "cfnLint.path": "/home/dev/.local/bin/cfn-lint",
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "python.linting.prospectorPath": "${env:IMAGE_USER_HOME_BIN}/prospector",
+  "python.formatting.autopep8Path": "${env:IMAGE_USER_HOME_BIN}/autopep8",
+  "cfnLint.path": "${env:IMAGE_USER_HOME_BIN}/cfn-lint",
   "cfnLint.validateUsingJsonSchema": false,
   "cfnNagLint.path": "/usr/local/bin/cfn_nag",
   "files.associations": {
