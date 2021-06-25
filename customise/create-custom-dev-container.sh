@@ -7,6 +7,11 @@ if [[ $# -ne 3 ]]; then
     exit 4
 fi
 
+PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+cd "$PARENT_PATH"
+mkdir -p ./home
+
+
 if [[ -z "${NO_PULL}" ]]; then
   echo Getting latest image
   sudo docker pull pabuk/dev-python:$3

@@ -2,6 +2,7 @@ ARG IMAGE_PYTHON_VERSION=3.9
 # Arguments added above the FROM line are not available after the FROM line unless redefined after
 FROM python:${IMAGE_PYTHON_VERSION}
 ARG IMAGE_PYTHON_VERSION=3.9
+ARG TIMEZONE=Europe/London
 ARG USER_NAME=dev
 ARG GROUP_NAME=${USER_NAME}
 ARG USER_HOME=/home/${USER_NAME}
@@ -12,8 +13,6 @@ ARG DEPENDENCIES_DIR=/var/dependencies
 ARG WORKSPACE_DIR=/workspace
 ARG WORKSPACE_TEMPLATE_DIR=/.workspace
 ARG CUSTOMISE_DIR=${USER_HOME}/customise
-ARG PYTHON_VENV_DIR=${WORKSPACE_DIR}/.python/${IMAGE_PYTHON_VERSION}
-ARG PYTHON_VENV_TEMPLATE_DIR=${WORKSPACE_TEMPLATE_DIR}/.python/${IMAGE_PYTHON_VERSION}
 
 # Expose as envars for use in container or in child images
 ENV IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
@@ -26,8 +25,6 @@ ENV IMAGE_USER_GID=${USER_GID}
 ENV IMAGE_WORKSPACE_DIR=${WORKSPACE_DIR}
 ENV IMAGE_WORKSPACE_TEMPLATE_DIR=${WORKSPACE_TEMPLATE_DIR}
 ENV IMAGE_CUSTOMISE_DIR=${CUSTOMISE_DIR}
-ENV IMAGE_PYTHON_VENV_DIR=${PYTHON_VENV_DIR}
-ENV IMAGE_PYTHON_VENV_TEMPLATE_DIR=${PYTHON_VENV_TEMPLATE_DIR}
 
 COPY dependencies/packages.txt ${DEPENDENCIES_DIR}/
 COPY bin/install-apt-packages.sh /usr/local/bin/
@@ -35,6 +32,8 @@ COPY bin/install-apt-packages.sh /usr/local/bin/
 SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
+    # Set timezone
+    && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
     # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
     && apt-get purge -y imagemagick imagemagick-6-common \
     # Install packages
@@ -89,6 +88,19 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # Copy files to user home, including subdirectories
 COPY --chown=${USER_UID} home/. ${USER_HOME}/
 
+# Run as user
+#   Install nvm & nodejs lts
+RUN su - ${USER_NAME} -c "\
+    cd /tmp \
+    && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
+    && zsh ./install.sh \
+    && . ~/.nvm/nvm.sh \
+    && nvm install --lts \
+    && nvm alias default node \
+    && nvm cache clear \
+    && rm install.sh \
+"
+
 COPY dependencies/* ${DEPENDENCIES_DIR}/
 
 COPY bin/* /usr/local/bin/
@@ -97,30 +109,14 @@ SHELL ["/bin/zsh", "-c"]
 
 # Run as user
 #   Switch to zsh
-#   Install python dependencies
-#   Install pipx depedancies
+#   Install python pip dependencies
+#   Install python pipx depedancies
 #   Configure awsume
-#   Install nvm & nodejs lts
 RUN su - ${USER_NAME} -c "\
     export PATH=\"${USER_HOME}/.local/bin/:${PATH}\" \
     && printf \"zsh\\n\" >> ~/.bashrc \
-    && /usr/local/bin/python -m venv ${PYTHON_VENV_DIR} \
-    && source ${PYTHON_VENV_DIR}/bin/activate \
-    && python -m pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r ${DEPENDENCIES_DIR}/requirements.txt \
-    && mkdir -p ${WORKSPACE_TEMPLATE_DIR}/.python \
-    && install-pipx-packages.sh ${DEPENDENCIES_DIR}/pipx.txt \
-    && pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' --include-deps jupyter \
-    && mv -v ${PYTHON_VENV_DIR} ${WORKSPACE_TEMPLATE_DIR}/.python \
+    && install-python-packages.sh ${DEPENDENCIES_DIR} ${IMAGE_WORKSPACE_DIR} ${IMAGE_WORKSPACE_TEMPLATE_DIR} ${IMAGE_PYTHON_VERSION} \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
-    && cd /tmp \
-    && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
-    && zsh ./install.sh \
-    && . ~/.nvm/nvm.sh \
-    && nvm install --lts \
-    && nvm alias default node \
-    && nvm cache clear \
-    && rm install.sh \
 "
 
 # Copy customisation files to user home

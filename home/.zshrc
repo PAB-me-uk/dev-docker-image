@@ -48,4 +48,3 @@ if [ "2" -gt $SSH_AGENT_LINES ] ; then
 fi
 . ~/.ssh-env-vars
 
-cd /workspace/
