@@ -10,3 +10,5 @@ tree
 zsh
 ruby
 task-spooler
+net-tools
+dnsutils

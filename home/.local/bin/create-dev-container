@@ -42,3 +42,7 @@ sudo docker container run -d \
   pabuk/dev-python:$3
 echo Container created with name: $1
 
+if [[ -d ${HOME}/.zsh-extra ]]; then
+  sudo docker cp ${HOME}/.zsh-extra $1:${HOME}/
+  echo Copied ${HOME}/.zsh-extra to new container
+fi
