@@ -43,7 +43,7 @@ mkdir -p ~/.aws
 echo Creating container with name: $1
 sudo docker container run -d \
   --name $1 \
-  --mount type=volume,source=$2,target=/workspace \
+  --mount type=volume,source=$2,target=$IMAGE_WORKSPACE_DIR \
   --mount type=bind,source=${HOST_USER_HOME}/.ssh,target=/home/dev/.ssh \
   --mount type=bind,source=${HOST_USER_HOME}/.aws,target=/home/dev/.aws \
   --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \

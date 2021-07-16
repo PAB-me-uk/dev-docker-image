@@ -125,7 +125,7 @@ class Tests(unittest.TestCase):
         )
 
     def test_workspace_file_creation_perms_and_deletion(self):
-        self.file_creation_perms_and_deletion('/workspace')
+        self.file_creation_perms_and_deletion(self.workspace_dir)
 
     def test_user_home_file_creation_perms_and_deletion(self):
         self.file_creation_perms_and_deletion(EXPECTED_USER_HOME)

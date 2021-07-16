@@ -10,8 +10,8 @@ ARG USER_HOME_BIN=${USER_HOME}/.local/bin
 ARG USER_UID=1000
 ARG USER_GID=1000
 ARG DEPENDENCIES_DIR=/var/dependencies
-ARG WORKSPACE_DIR=/workspace
-ARG WORKSPACE_TEMPLATE_DIR=/.workspace
+ARG WORKSPACE_DIR=/work
+ARG WORKSPACE_TEMPLATE_DIR=/.work
 ARG CUSTOMISE_DIR=${USER_HOME}/customise
 
 # Expose as envars for use in container or in child images
@@ -121,6 +121,11 @@ RUN su - ${USER_NAME} -c "\
 
 # Copy customisation files to user home
 COPY --chown=${USER_UID} customise/. ${USER_HOME}/customise/
+
+RUN sed -i "s|\${env:IMAGE_PYTHON_VERSION}|${IMAGE_PYTHON_VERSION}|g" ${USER_HOME}/.vscode-server/data/Machine/settings.json \
+    && sed -i "s|\${env:IMAGE_USER_HOME_BIN}|${IMAGE_USER_HOME_BIN}|g" ${USER_HOME}/.vscode-server/data/Machine/settings.json
+
+RUN echo ${IMAGE_WORKSPACE_DIR} xxxx
 
 # Run container as user
 USER ${USER_NAME}

@@ -6,7 +6,7 @@
 
 [Docker Desktop](https://docs.docker.com/docker-for-windows/wsl/)
 
-*Follow configuration instructions from links above*
+_Follow configuration instructions from links above_
 
 Ensure your docker desktop is not the default WSL OS use `wsl --list ` and `wsl --set-default YOUR_OS_NAME_HERE` to choose the OS you installed from the microsoft store
 
@@ -14,7 +14,7 @@ Ensure your docker desktop is not the default WSL OS use `wsl --list ` and `wsl 
 
 [Docker Desktop](https://docs.docker.com/docker-for-mac/install/)
 
-*Follow configuration instructions from link above*
+_Follow configuration instructions from link above_
 
 ## Visual Studio Code
 
@@ -47,10 +47,9 @@ code --install-extension oderwat.indent-rainbow
 
 Press ctrl+shift+p for command palette and choose "Preferences: Open Settings (JSON)" to edit settings, add the setting below
 
-
 ```json
 {
-  "remote.containers.gitCredentialHelperConfigLocation": "none",
+  "remote.containers.gitCredentialHelperConfigLocation": "none"
 }
 ```
 
@@ -64,7 +63,7 @@ docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/r
 
 ### Windows
 
-***This must be done in your main WSL OS (type `wsl` in command prompt)***
+**_This must be done in your main WSL OS (type `wsl` in command prompt)_**
 
 Identify you windows user id via `ls /mnt/c/Users/` and replace YOUR_WINDOWS_USERNAME below
 
@@ -92,7 +91,7 @@ create-dev-container another-container another-volume 3.9
 
 ## Important!
 
-Volume is mounted as `/workspace` files within this directory will be persisted unless you delete the volume
+Volume is mounted as `/work` files within this directory will be persisted unless you delete the volume
 
 Other paths within container will be lost if the container is removed or recreated.
 
@@ -150,14 +149,14 @@ This will open a new window to the same container pointing to the customisation 
 
 Update files within the `/home/dev/customise` directory as below:
 
-| File | Usage |
-| ---- | ----  |
-| /dependencies/packages.txt | Add any additional APT packages here. |
-| /dependencies/requirements.txt | Add any additional Python PIP packages here. |
-| /dependencies/pipx.txt | Add any additional Python PIPX packages (stand alone Python utilities) here. |
-| /dependencies/extensions.txt | Add any additional Visual Studio Code extensions here, use command `code --list-extensions` from outside container to get correct name for an extension. |
-| /home (directory) | Any files and folders placed in `/home` will be recursively copied to `/home/dev/` in the new custom container. You can use this to override any of the existing files from the original image. |
-| /Dockerfile | Optionally add you own custom steps here as per [the documentation](https://docs.docker.com/engine/reference/builder/). |
+| File                           | Usage                                                                                                                                                                                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| /dependencies/packages.txt     | Add any additional APT packages here.                                                                                                                                                           |
+| /dependencies/requirements.txt | Add any additional Python PIP packages here.                                                                                                                                                    |
+| /dependencies/pipx.txt         | Add any additional Python PIPX packages (stand alone Python utilities) here.                                                                                                                    |
+| /dependencies/extensions.txt   | Add any additional Visual Studio Code extensions here, use command `code --list-extensions` from outside container to get correct name for an extension.                                        |
+| /home (directory)              | Any files and folders placed in `/home` will be recursively copied to `/home/dev/` in the new custom container. You can use this to override any of the existing files from the original image. |
+| /Dockerfile                    | Optionally add you own custom steps here as per [the documentation](https://docs.docker.com/engine/reference/builder/).                                                                         |
 
 Run the command below to create a new custom dev container:
 
@@ -166,6 +165,6 @@ cd ~/customise
 ./create-custom-dev-container.sh custom-container-name volume-name 3.9
 ```
 
-*Replace `3.9` above with desired Python version*
+_Replace `3.9` above with desired Python version_
 
-Note: You may wish to backup or version control your changes to the customisation files, as a minimum it is worth copying them to a volume e.g. `/workspace/`
+Note: You may wish to backup or version control your changes to the customisation files, as a minimum it is worth copying them to a volume e.g. `/work/`
