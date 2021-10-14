@@ -71,6 +71,24 @@ Identify you windows user id via `ls /mnt/c/Users/` and replace YOUR_WINDOWS_USE
 docker run --rm -it --env HOST_USER_HOME=/mnt/c/Users/YOUR_WINDOWS_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
 ```
 
+### WSL/Linux/Ubuntu
+
+If you use WSL as your main development environment it is likely that the following key folders files are in your home area in your WSL OS..
+
+    + .aws (AWS config folder)
+
+    + .ssh (SSH keys folder)
+
+    + .gitconfig (GitHub configuration)
+
+If this is the case then you should consider the WSL as your host and create your initial image using your WSL/Linux home path..
+
+```bash
+docker run --rm -it --env HOST_USER_HOME=/home/YOUR_WSL_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
+```
+
+The initial container and any custom containers (see below) will make use of this HOST_USER_NAME variable to mount the key files folders from the correct location.
+
 ## Connect to container
 
 ```bash
@@ -89,11 +107,18 @@ Once you have a container made from the bootstrap process above you can simply c
 create-dev-container another-container another-volume 3.9
 ```
 
+Note this does not have to be the same python version as the container itself
+
 ## Important!
 
-Volume is mounted as `/work` files within this directory will be persisted unless you delete the volume
+Volume is mounted as `/workspace` files within this directory will be persisted unless you delete the volume, data outside of the workspace directory will be lost if the container is removed or recreated.
 
-Other paths within container will be lost if the container is removed or recreated.
+Python dependencies are copied across to the volume during first launch and are stored in the directory /workspace/.python/3.x any further packages you install will also be placed here and will be available to any containers with this volume mounted that share the same Python version.
+Performance
+
+if you are not using WSL 2.0 then and you are using your container as your main development environment you may wish to increase available CPU’s, Memory or Disk space available to the Docker Desktop VM after checking memory usage and disk space on your host machine.
+
+If you are using WSL 2.0 then you can already access all of the main systems resources.
 
 ## Other commands
 
@@ -126,6 +151,8 @@ Create files containing your aliases (and any other zsh customisation) in `~/.zs
 ### Further customisation of image
 
 You can create a customised version by following the steps below, this example uses Visual Studio Code, but this is not a requirement.
+
+Note: When producing a custom image you should use a container that is based on the very latest image available from DockerHub, if in doubt simply create a new dev container which will pull the latest image and use this during the customisation steps below.
 
 From within an existing dev container:
 
@@ -167,4 +194,4 @@ cd ~/customise
 
 _Replace `3.9` above with desired Python version_
 
-Note: You may wish to backup or version control your changes to the customisation files, as a minimum it is worth copying them to a volume e.g. `/work/`
+Note: You may wish to backup or version control your changes to the customisation files, as a minimum it is worth copying them to a volume e.g. `/workspace/`

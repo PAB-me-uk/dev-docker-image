@@ -10,8 +10,8 @@ ARG USER_HOME_BIN=${USER_HOME}/.local/bin
 ARG USER_UID=1000
 ARG USER_GID=1000
 ARG DEPENDENCIES_DIR=/var/dependencies
-ARG WORKSPACE_DIR=/work
-ARG WORKSPACE_TEMPLATE_DIR=/.work
+ARG WORKSPACE_DIR=/workspace
+ARG WORKSPACE_TEMPLATE_DIR=/.workspace
 ARG CUSTOMISE_DIR=${USER_HOME}/customise
 
 # Expose as envars for use in container or in child images
