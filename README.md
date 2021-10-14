@@ -75,11 +75,9 @@ docker run --rm -it --env HOST_USER_HOME=/mnt/c/Users/YOUR_WINDOWS_USERNAME --mo
 
 If you use WSL as your main development environment it is likely that the following key folders files are in your home area in your WSL OS..
 
-    + .aws (AWS config folder)
-
-    + .ssh (SSH keys folder)
-
-    + .gitconfig (GitHub configuration)
+- .aws (AWS config folder)
+- .ssh (SSH keys folder)
+- .gitconfig (GitHub configuration)
 
 If this is the case then you should consider the WSL as your host and create your initial image using your WSL/Linux home path..
 
@@ -116,7 +114,7 @@ Volume is mounted as `/workspace` files within this directory will be persisted 
 Python dependencies are copied across to the volume during first launch and are stored in the directory /workspace/.python/3.x any further packages you install will also be placed here and will be available to any containers with this volume mounted that share the same Python version.
 Performance
 
-if you are not using WSL 2.0 then and you are using your container as your main development environment you may wish to increase available CPU’s, Memory or Disk space available to the Docker Desktop VM after checking memory usage and disk space on your host machine.
+If you are not using WSL 2.0 then and you are using your container as your main development environment you may wish to increase available CPU’s, Memory or Disk space available to the Docker Desktop VM after checking memory usage and disk space on your host machine.
 
 If you are using WSL 2.0 then you can already access all of the main systems resources.
 
