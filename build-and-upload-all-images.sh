@@ -8,4 +8,4 @@ cd "$PARENT_PATH"
 ./build-and-upload-image.sh 3.7
 ./build-and-upload-image.sh 3.8
 ./build-and-upload-image.sh 3.9
-
+./build-and-upload-image.sh 3.10

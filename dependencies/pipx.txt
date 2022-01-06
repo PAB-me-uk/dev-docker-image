@@ -5,3 +5,4 @@ cfn-lint
 prospector
 autopep8
 cfn-square
+black

@@ -176,9 +176,17 @@ class Tests(unittest.TestCase):
         self.assertEqual('/home/dev/.local/bin/autopep8', shutil.which('autopep8'))
         self.zsh_can_access('autopep8 --version')
 
+    def test_black(self):
+        self.assertEqual('/home/dev/.local/bin/black', shutil.which('black'))
+        self.zsh_can_access('black --version')
+
     def test_cfn_lint(self):
         self.assertEqual('/home/dev/.local/bin/cfn-lint', shutil.which('cfn-lint'))
         self.zsh_can_access('cfn-lint --version')
+
+    def test_cfn_square(self):
+        self.assertEqual('/home/dev/.local/bin/cf', shutil.which('cf'))
+        self.zsh_can_access('cf --version')
 
     def test_cfn_nag(self):
         self.assertEqual('/usr/local/bin/cfn_nag', shutil.which('cfn_nag'))

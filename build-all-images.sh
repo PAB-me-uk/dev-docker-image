@@ -8,4 +8,4 @@ cd "$PARENT_PATH"
 ./build-image.sh 3.7
 ./build-image.sh 3.8
 ./build-image.sh 3.9
-
+./build-image.sh 3.10
