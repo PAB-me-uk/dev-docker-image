@@ -6,3 +6,5 @@ prospector
 autopep8
 cfn-square
 black
+pip-tools
+poetry

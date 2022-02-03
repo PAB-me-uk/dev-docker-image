@@ -12,3 +12,4 @@ ruby
 task-spooler
 net-tools
 dnsutils
+jq

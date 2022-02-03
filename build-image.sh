@@ -15,7 +15,15 @@ TEMP_VOLUME_NAME=temp-volume-for-check-container-${IMAGE_PYTHON_VERSION}
 echo Building image ${IMAGE_NAME} with python version: ${IMAGE_PYTHON_VERSION}
 export DOCKER_BUILDKIT=0
 export COMPOSE_DOCKER_CLI_BUILD=0
-time docker build . -t ${IMAGE_NAME} --build-arg IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
+echo NO_CACHE="${NO_CACHE}"
+if [[ -z "${NO_CACHE}" ]]; then
+  echo Using cache
+  time docker build . -t ${IMAGE_NAME} --build-arg IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION}
+else
+  echo Ignoring cache
+  time docker build . -t ${IMAGE_NAME} --build-arg IMAGE_PYTHON_VERSION=${IMAGE_PYTHON_VERSION} --no-cache
+fi
+echo NO_TEST="${NO_TEST}"
 if [[ -z "${NO_TEST}" ]]; then
   echo ---------------------------------------
   echo Testing container

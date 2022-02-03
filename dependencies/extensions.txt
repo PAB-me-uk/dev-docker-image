@@ -12,5 +12,6 @@ streetsidesoftware.code-spell-checker
 ryu1kn.partial-diff
 moshfeu.compare-folders
 oderwat.indent-rainbow
+hashicorp.terraform
 
 # Hint: type `code --list-extensions` in a terminal to get list.
