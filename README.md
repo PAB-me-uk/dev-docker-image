@@ -63,29 +63,15 @@ docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/r
 
 ### Windows
 
-**_This must be done in your main WSL OS (type `wsl` in command prompt)_**
-
-Identify you windows user id via `ls /mnt/c/Users/` and replace YOUR_WINDOWS_USERNAME below
+This must be done in your main WSL OS (type wsl in command or powershell prompt to access the wsl prompt)
 
 ```bash
-docker run --rm -it --env HOST_USER_HOME=/mnt/c/Users/YOUR_WINDOWS_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
+mkdir -p ~/.ssh
+mkdir -p ~/.aws
+docker run --rm -it --env HOST_USER_HOME=~ --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
 ```
 
-### WSL/Linux/Ubuntu
-
-If you use WSL as your main development environment it is likely that the following key folders files are in your home area in your WSL OS..
-
-- .aws (AWS config folder)
-- .ssh (SSH keys folder)
-- .gitconfig (GitHub configuration)
-
-If this is the case then you should consider the WSL as your host and create your initial image using your WSL/Linux home path..
-
-```bash
-docker run --rm -it --env HOST_USER_HOME=/home/YOUR_WSL_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
-```
-
-The initial container and any custom containers (see below) will make use of this HOST_USER_NAME variable to mount the key files folders from the correct location.
+Note: The docker image will map ~/.aws and ~/ssh back to the user home directory in your WSL host, place any configuration in those folders for it to be automatically shared with any dev containers you create.
 
 ## Connect to container
 
