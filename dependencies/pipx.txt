@@ -8,3 +8,4 @@ cfn-square
 black
 pip-tools
 poetry
+cfn-flip

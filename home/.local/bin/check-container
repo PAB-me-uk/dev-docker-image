@@ -214,6 +214,10 @@ class Tests(unittest.TestCase):
         self.assertEqual("/home/dev/.local/bin/pip-sync", shutil.which("pip-sync"))
         self.zsh_can_access("pip-sync --version")
 
+    def test_cfn_flip(self):
+        self.assertEqual("/home/dev/.local/bin/cfn-flip", shutil.which("cfn-flip"))
+        self.zsh_can_access("cfn-flip --version")
+
 
 if __name__ == "__main__":
     unittest.main(buffer=False)

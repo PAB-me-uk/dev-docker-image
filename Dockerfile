@@ -58,6 +58,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm aws-sam-cli-linux-x86_64.zip \
     && /bin/bash ./sam-installation/install \
     && rm -rf ./sam-installation \
+    # Install Session Manager Plugin
+    && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
+    && dpkg -i session-manager-plugin.deb \
     # Install cfn-nag
     && gem install cfn-nag \
     # Create user and group, allow sudo
