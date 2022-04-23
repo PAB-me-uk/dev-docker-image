@@ -4,4 +4,4 @@ pipx
 pip-chill
 ipykernel
 boto3
-
+prospector

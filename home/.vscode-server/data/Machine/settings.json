@@ -2,9 +2,10 @@
   "terminal.integrated.defaultProfile.linux": "zsh",
   "python.pythonPath": "${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/python",
   "python.defaultInterpreterPath": "${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/python",
-  "python.linting.prospectorPath": "${env:IMAGE_USER_HOME_BIN}/prospector",
+  "python.linting.prospectorPath": "${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/prospector",
   "python.formatting.autopep8Path": "${env:IMAGE_USER_HOME_BIN}/autopep8",
   "python.formatting.blackPath": "${env:IMAGE_USER_HOME_BIN}/black",
+  "python.linting.mypyPath": "/home/dev/.local/bin/mypy",
   "terraform-ls.terraformExecPath": "/usr/bin/terraform",
   "cfnLint.path": "${env:IMAGE_USER_HOME_BIN}/cfn-lint",
   "cfnLint.validateUsingJsonSchema": false,
@@ -42,13 +43,16 @@
     "--max-line-length",
     "100",
     "--strictness",
-    "medium",
-    "--ignore-patterns",
-    "pylint(import-error)"
+    "medium"
   ],
   "python.linting.banditEnabled": false,
   "python.linting.flake8Enabled": false,
   "python.linting.mypyEnabled": false,
+  "python.linting.mypyArgs": [
+    "--follow-imports=normal",
+    "--show-column-numbers",
+    "--python-executable=${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/python"
+  ],
   "python.linting.pycodestyleEnabled": false,
   "python.linting.pydocstyleEnabled": false,
   "python.linting.pylamaEnabled": false,

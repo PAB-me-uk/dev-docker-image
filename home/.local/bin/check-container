@@ -170,7 +170,8 @@ class Tests(unittest.TestCase):
         self.all_shells_can_access("jq --version")
 
     def test_prospector(self):
-        self.assertEqual("/home/dev/.local/bin/prospector", shutil.which("prospector"))
+        self.assertEqual(
+            f"{self.workspace_dir}/.python/{self.python_version}/bin/prospector", shutil.which("prospector"))
         self.zsh_can_access("prospector --version")
 
     def test_autopep8(self):
@@ -217,6 +218,10 @@ class Tests(unittest.TestCase):
     def test_cfn_flip(self):
         self.assertEqual("/home/dev/.local/bin/cfn-flip", shutil.which("cfn-flip"))
         self.zsh_can_access("cfn-flip --version")
+
+    def test_mypy(self):
+        self.assertEqual("/home/dev/.local/bin/mypy", shutil.which("mypy"))
+        self.zsh_can_access("mypy --version")
 
 
 if __name__ == "__main__":
