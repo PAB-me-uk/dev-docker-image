@@ -13,3 +13,4 @@ task-spooler
 net-tools
 dnsutils
 jq
+iputils-ping
