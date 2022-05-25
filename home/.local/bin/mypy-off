@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+settings_file=/home/dev/.vscode-server/data/Machine/settings.json
+tmp=$(mktemp)
+jq '."python.linting.mypyEnabled" = false' ${settings_file} > "${tmp}" && mv "${tmp}" ${settings_file}
+grep "python.linting.mypyEnabled" ${settings_file}

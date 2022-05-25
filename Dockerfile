@@ -63,6 +63,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && dpkg -i session-manager-plugin.deb \
     # Install cfn-nag
     && gem install cfn-nag \
+    # Install Dart Sass
+    && wget -q https://github.com/sass/dart-sass/releases/download/1.51.0/dart-sass-1.51.0-linux-x64.tar.gz \
+    && tar -xvf dart-sass-1.51.0-linux-x64.tar.gz \
+    && rm dart-sass-1.51.0-linux-x64.tar.gz \
+    && mv dart-sass/sass /usr/local/bin/ \
+    && rm -rf dart-sass \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \

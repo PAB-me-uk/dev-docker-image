@@ -52,10 +52,7 @@
     "--max-line-length=100",
     "--indent-size=4"
   ],
-  "python.formatting.blackArgs": [
-    "--line-length=100",
-    "--skip-string-normalization"
-  ],
+  "python.formatting.blackArgs": ["--line-length=100"],
   "python.linting.prospectorEnabled": true,
   "python.linting.enabled": true,
   "python.linting.prospectorArgs": [

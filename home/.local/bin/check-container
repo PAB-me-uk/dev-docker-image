@@ -223,6 +223,10 @@ class Tests(unittest.TestCase):
         self.assertEqual("/home/dev/.local/bin/mypy", shutil.which("mypy"))
         self.zsh_can_access("mypy --version")
 
+    def test_sass(self):
+        self.assertEqual("/usr/local/bin/sass", shutil.which("sass"))
+        self.zsh_can_access("sass --version")
+
 
 if __name__ == "__main__":
     unittest.main(buffer=False)
