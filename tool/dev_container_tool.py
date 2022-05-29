@@ -1,42 +1,46 @@
-#%%
-import docker
-from typing import Union
-
-DEV_CONTAINER_PREFIX = "pabuk/dev-python:"
-
-client = docker.from_env()
-#%%
-def container_python_version(container) -> Union[str, bool]:
-    if container.attrs.get("Config", {}).get("Image", "").startswith(DEV_CONTAINER_PREFIX):
-        image = container.attrs["Config"]["Image"]
-        assert isinstance(image, str)
-        return image.split(":")[1]
-    return False
+from enum import Enum
+from typing import Optional
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+from lib.docker_utils import get_dev_containers
 
 
-# Valid mount types - 'bind', 'volume', 'tmpfs', 'npipe'
-
-#%%
-[
-    # container.attrs.get("Config", {}).get("Image", "")
-    (
-        container.name,
-        container_python_version(container=container),
-        # container.attrs["Mounts"],
-        # [mount for mount in container.attrs["Mounts"] if mount["Type"] not in ["volume", "bind"]],
-        container.image.attrs.get("RepoDigests", []),
-    )
-    # (c.name, c.image, c.status, c.attrs["Config"]["Image"], c.attrs["Volumes"], [c.attrs["Mounts"]])
-    for container in client.containers.list()
-    if container_python_version(container=container) == "3.6"
-]
+class Mode(Enum):
+    CREATE = "create"
+    UPGRADE = "upgrade"
 
 
-#%%
+def main() -> None:
+    mode = select_mode()
+    container_name, existing_container = select_container_name(mode=mode)
+    print(mode, container_name, existing_container)
 
-registry_data = client.images.get_registry_data("pabuk/dev-python:3.6")
 
-#%%
+def select_mode() -> Mode:
+    return inquirer.select(
+        message="Please choose option",
+        choices=[
+            Choice(Mode.CREATE, "Create a new dev container"),
+            Choice(Mode.UPGRADE, "Upgrade an existing dev container"),
+        ],
+    ).execute()
 
-registry_data.__dict__
-#%%
+
+def select_container_name(mode: Mode) -> tuple[str, Optional[object]]:
+    if mode is Mode.CREATE:
+        return (inquirer.text(message="Enter a name for the new container:").execute(), None)
+    elif mode is Mode.UPGRADE:
+        containers = get_dev_containers()
+        container_name = inquirer.select(
+            message="Please select a container to upgrade",
+            choices=sorted(containers.keys()),
+        ).execute()
+        return (container_name, containers[container_name])
+    else:
+        raise ValueError(f"Unknown mode: {mode}")
+
+
+# name = inquirer.text(message="What's your name:").execute()
+# confirm = inquirer.confirm(message="Confirm?").execute()
+if __name__ == "__main__":
+    main()
