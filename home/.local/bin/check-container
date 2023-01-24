@@ -227,6 +227,21 @@ class Tests(unittest.TestCase):
         self.assertEqual("/usr/local/bin/sass", shutil.which("sass"))
         self.zsh_can_access("sass --version")
 
+    def test_mysql(self):
+        self.assertEqual("/usr/bin/mysql", shutil.which("mysql"))
+        self.zsh_can_access("mysql --version")
+
+    def test_docker_compose(self):
+        self.zsh_can_access("docker compose --version")
+
+    def test_steampipe(self):
+        self.assertEqual("/usr/local/bin/steampipe", shutil.which("steampipe"))
+        self.zsh_can_access("steampipe -v")
+
+    def test_7zip(self):
+        self.assertEqual("/usr/bin/7za", shutil.which("7za"))
+        self.zsh_can_access("7za --help")
+
 
 if __name__ == "__main__":
     unittest.main(buffer=False)

@@ -44,6 +44,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && wget -q https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
     && apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y terraform docker-ce-cli \
     # Install AWS CLI
     && cd /tmp \
@@ -69,6 +70,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm dart-sass-1.51.0-linux-x64.tar.gz \
     && mv dart-sass/sass /usr/local/bin/ \
     && rm -rf dart-sass \
+    # Install steampipe
+    && wget -q https://github.com/turbot/steampipe/releases/download/v0.17.0-alpha.23/steampipe_linux_amd64.tar.gz \
+    && tar -xvf steampipe_linux_amd64.tar.gz \
+    && rm steampipe_linux_amd64.tar.gz \
+    && mv steampipe /usr/local/bin/ \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
@@ -98,7 +104,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 COPY --chown=${USER_UID} home/. ${USER_HOME}/
 
 # Run as user
-#   Install nvm & nodejs lts
+# Install nvm, nodejs lts and steampipe plugins
 RUN su - ${USER_NAME} -c "\
     cd /tmp \
     && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
@@ -108,6 +114,7 @@ RUN su - ${USER_NAME} -c "\
     && nvm alias default node \
     && nvm cache clear \
     && rm install.sh \
+    && steampipe plugin install aws awscfn terraform jira \
 "
 
 COPY dependencies/* ${DEPENDENCIES_DIR}/

@@ -7,7 +7,7 @@
   "python.linting.mypyPath": "/home/dev/.local/bin/mypy",
   "python.linting.prospectorPath": "${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/prospector",
 
-  "terraform-ls.terraformExecPath": "/usr/bin/terraform",
+  "terraform.languageServer.terraform.path": "/usr/bin/terraform",
 
   "terminal.integrated.defaultProfile.linux": "zsh",
 
