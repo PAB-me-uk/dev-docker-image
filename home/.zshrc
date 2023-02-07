@@ -21,10 +21,7 @@ zstyle ':vcs_info:git:*' formats '%b'
 
 # Set up the prompt (with git branch name)
 PROMPT='%n in ${PWD/#$HOME/~} ${vcs_info_msg_0_} > '
-
 setopt prompt_subst
-
-  # Linux
 DIVIDER='%F{magenta}|%F{blue}'
 COLON=':%F{cyan}'
 PROMPT="%K{235}${DIVIDER}%F{cyan}%T${DIVIDER}path${COLON}%~${DIVIDER}aws${COLON}\${AWSUME_PROFILE}${DIVIDER}git${COLON}\${vcs_info_msg_0_}${DIVIDER}?${COLON}%?${DIVIDER}
@@ -48,3 +45,9 @@ if [ "2" -gt $SSH_AGENT_LINES ] ; then
 fi
 . ~/.ssh-env-vars
 
+# Configure just
+fpath=(/home/dev/.just/zsh-autocomplete/ $fpath)
+
+# Aliases
+alias j=just
+alias docker="sudo docker"

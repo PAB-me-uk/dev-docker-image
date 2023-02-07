@@ -1,5 +1,6 @@
 # Place apt package names to install below, one per line.
 software-properties-common
+apt-utils
 gnupg
 less
 man
@@ -17,3 +18,5 @@ iputils-ping
 docker-compose
 default-mysql-client
 p7zip-full
+linkchecker
+csvtool

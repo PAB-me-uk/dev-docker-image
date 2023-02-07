@@ -45,7 +45,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y terraform docker-ce-cli \
+    && apt-get install -y terraform docker-ce-cli docker-compose-plugin \
     # Install AWS CLI
     && cd /tmp \
     && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
@@ -71,10 +71,15 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && mv dart-sass/sass /usr/local/bin/ \
     && rm -rf dart-sass \
     # Install steampipe
-    && wget -q https://github.com/turbot/steampipe/releases/download/v0.17.0-alpha.23/steampipe_linux_amd64.tar.gz \
+    && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
     && tar -xvf steampipe_linux_amd64.tar.gz \
     && rm steampipe_linux_amd64.tar.gz \
     && mv steampipe /usr/local/bin/ \
+    # Install Just
+    && curl -q 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg 1> /dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | tee /etc/apt/sources.list.d/prebuilt-mpr.list 1> /dev/null \
+    && apt update \
+    && apt install just -y \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
@@ -128,11 +133,15 @@ SHELL ["/bin/zsh", "-c"]
 #   Install python pip dependencies
 #   Install python pipx depedancies
 #   Configure awsume
+#   Setup just autocompletions
 RUN su - ${USER_NAME} -c "\
     export PATH=\"${USER_HOME}/.local/bin/:${PATH}\" \
     && printf \"zsh\\n\" >> ~/.bashrc \
     && install-python-packages.sh ${DEPENDENCIES_DIR} ${IMAGE_WORKSPACE_DIR} ${IMAGE_WORKSPACE_TEMPLATE_DIR} ${IMAGE_PYTHON_VERSION} \
     && ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
+    && mkdir -p ~/.just/zsh-autocomplete \
+    && just --completions zsh > ~/.just/zsh-autocomplete/_just \
+    && echo compinit >> ~/.zshrc \
 "
 
 # Copy customisation files to user home
@@ -140,8 +149,6 @@ COPY --chown=${USER_UID} customise/. ${USER_HOME}/customise/
 
 RUN sed -i "s|\${env:IMAGE_PYTHON_VERSION}|${IMAGE_PYTHON_VERSION}|g" ${USER_HOME}/.vscode-server/data/Machine/settings.json \
     && sed -i "s|\${env:IMAGE_USER_HOME_BIN}|${IMAGE_USER_HOME_BIN}|g" ${USER_HOME}/.vscode-server/data/Machine/settings.json
-
-RUN echo ${IMAGE_WORKSPACE_DIR} xxxx
 
 # Run container as user
 USER ${USER_NAME}
