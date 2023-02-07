@@ -254,6 +254,10 @@ class Tests(unittest.TestCase):
         self.assertEqual("/usr/bin/csvtool", shutil.which("csvtool"))
         self.zsh_can_access("csvtool --help")
 
+    def test_gh(self):
+        self.assertEqual("/usr/bin/gh", shutil.which("gh"))
+        self.zsh_can_access("gh --version")
+
 
 if __name__ == "__main__":
     unittest.main(buffer=False)

@@ -62,13 +62,17 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     # Install Session Manager Plugin
     && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
     && dpkg -i session-manager-plugin.deb \
+    # Install GitHub CLI
+    && wget -q https://github.com/cli/cli/releases/download/v2.22.1/gh_2.22.1_linux_amd64.deb \
+    && dpkg -i gh_2.22.1_linux_amd64.deb \
     # Install cfn-nag
     && gem install cfn-nag \
     # Install Dart Sass
-    && wget -q https://github.com/sass/dart-sass/releases/download/1.51.0/dart-sass-1.51.0-linux-x64.tar.gz \
-    && tar -xvf dart-sass-1.51.0-linux-x64.tar.gz \
-    && rm dart-sass-1.51.0-linux-x64.tar.gz \
+    && wget -q https://github.com/sass/dart-sass/releases/download/1.58.0/dart-sass-1.58.0-linux-x64.tar.gz \
+    && tar -xvf dart-sass-1.58.0-linux-x64.tar.gz \
+    && rm dart-sass-1.58.0-linux-x64.tar.gz \
     && mv dart-sass/sass /usr/local/bin/ \
+    && mv dart-sass/src /usr/local/bin/ \
     && rm -rf dart-sass \
     # Install steampipe
     && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
@@ -112,8 +116,8 @@ COPY --chown=${USER_UID} home/. ${USER_HOME}/
 # Install nvm, nodejs lts and steampipe plugins
 RUN su - ${USER_NAME} -c "\
     cd /tmp \
-    && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh \
-    && zsh ./install.sh \
+    && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh \
+    && bash ./install.sh \
     && . ~/.nvm/nvm.sh \
     && nvm install --lts \
     && nvm alias default node \
