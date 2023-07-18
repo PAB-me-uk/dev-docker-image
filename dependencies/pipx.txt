@@ -3,7 +3,6 @@
 awsume
 cfn-lint
 autopep8
-cfn-square
 black
 pip-tools
 poetry

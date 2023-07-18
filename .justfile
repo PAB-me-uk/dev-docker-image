@@ -24,10 +24,10 @@ build-image python-version no-cache="":
   export COMPOSE_DOCKER_CLI_BUILD=0
   if [[ -z "{{no-cache}}" ]]; then
     echo Using cache
-    time sudo docker build . -t ${image_name_and_tag} --build-arg IMAGE_PYTHON_VERSION={{python-version}}
+    time sudo docker build . -t ${image_name_and_tag} --progress=plain --build-arg IMAGE_PYTHON_VERSION={{python-version}}
   else
     echo Ignoring cache
-    time sudo docker build . -t ${image_name_and_tag} --build-arg IMAGE_PYTHON_VERSION={{python-version}} --no-cache
+    time sudo docker build . -t ${image_name_and_tag} --progress=plain --build-arg IMAGE_PYTHON_VERSION={{python-version}} --no-cache
   fi
   echo ---------------------------------------
   echo Testing container
@@ -36,7 +36,7 @@ build-image python-version no-cache="":
   echo Image ${image_name_and_tag} built successfully
 
 # Build all images.
-build-images no-cache="": (build-image "3.7" no-cache) (build-image "3.8" no-cache) (build-image "3.9" no-cache) (build-image "3.10" no-cache) (build-image "3.11" no-cache)
+build-images no-cache="": (build-image "3.8" no-cache) (build-image "3.9" no-cache) (build-image "3.10" no-cache) (build-image "3.11" no-cache)
 
 build-and-upload-image python-version no-cache="":
   sudo docker login
@@ -46,7 +46,15 @@ build-and-upload-image python-version no-cache="":
   sudo docker push "{{image_name}}:{{python-version}}"
   echo Image "{{image_name}}:{{python-version}}" uploaded successfully
 
-build-and-upload-images no-cache="": (build-and-upload-image "3.7" no-cache) (build-and-upload-image "3.8" no-cache) (build-and-upload-image "3.9" no-cache) (build-and-upload-image "3.10" no-cache) (build-and-upload-image "3.11" no-cache)
+build-and-upload-images no-cache="": (build-and-upload-image "3.8" no-cache) (build-and-upload-image "3.9" no-cache) (build-and-upload-image "3.10" no-cache) (build-and-upload-image "3.11" no-cache)
+
+connect-to-image python-version:
+  #!/usr/bin/env bash
+  set -exuo pipefail
+  image_name_and_tag="{{image_name}}:{{python-version}}"
+  temp_volume_name=temp-volume-for-check-container-{{python-version}}
+  sudo docker container run --rm -it --mount type=volume,source=${temp_volume_name},target=/workspace ${image_name_and_tag} bin/zsh
+
 
 # @todo
 

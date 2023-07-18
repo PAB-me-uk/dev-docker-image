@@ -42,12 +42,19 @@
   },
 
   "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.detectIndentation": false,
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
   },
-  "python.formatting.provider": "autopep8",
+
+  "isort.args": ["--profile", "black", "--line-length", "100"],
+  "python.formatting.provider": "black",
   "python.formatting.autopep8Args": [
     "--max-line-length=100",
     "--indent-size=4"
@@ -62,6 +69,7 @@
     "--strictness",
     "medium"
   ],
+  "python.analysis.typeCheckingMode": "off",
   "python.linting.mypyEnabled": false,
   "python.linting.mypyArgs": [
     "--strict",

@@ -1,20 +1,23 @@
 # Place Visual Studio Code extension below, one per line.
 
+bibhasdn.unique-lines
+dbaeumer.vscode-eslint
+eastman.vscode-cfn-nag
+esbenp.prettier-vscode
+hashicorp.terraform
+kddejong.vscode-cfn-lint
+moshfeu.compare-folders
+ms-python.autopep8
+ms-python.black-formatter
+ms-python.isort
 ms-python.python
 ms-python.vscode-pylance
 ms-toolsai.jupyter
-dbaeumer.vscode-eslint
-esbenp.prettier-vscode
-Orta.vscode-jest
-kddejong.vscode-cfn-lint
-eastman.vscode-cfn-nag
-streetsidesoftware.code-spell-checker
-ryu1kn.partial-diff
-moshfeu.compare-folders
 oderwat.indent-rainbow
-hashicorp.terraform
-wmaurer.change-case
-bibhasdn.unique-lines
+Orta.vscode-jest
+ryu1kn.partial-diff
+streetsidesoftware.code-spell-checker
 thamaraiselvam.remove-blank-lines
+wmaurer.change-case
 
 # Hint: type `code --list-extensions` in a terminal to get list.

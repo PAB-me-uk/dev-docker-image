@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 set -o pipefail
 
 dependencies_dir=$1
@@ -29,6 +30,12 @@ count=$(grep -cv '^\s*$\|^\s*\#' ${dependencies_dir}/pipx.txt) || true
 if [[ ${count} -ne 0 ]]; then
   grep -v '^\s*$\|^\s*\#' ${dependencies_dir}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {}
 fi
+
+if [[ "${python_version}" == "3.8" ]] || [[ "${python_version}" == "3.9" ]] ; then
+  pipx install cfn-square
+fi
+
+
 # Move virtual environment to workspace template dir, to be copied to volume later
 mkdir -p ${workspace_template_python_dir}
 mv -v ${workspace_python_dir}/${python_version} ${workspace_template_python_dir}

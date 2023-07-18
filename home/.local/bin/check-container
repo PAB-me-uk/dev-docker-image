@@ -2,14 +2,14 @@
 
 # pylint: disable=invalid-name
 import os
-import sys
+import pathlib
 import pwd
-import uuid
 import shlex
 import shutil
-import pathlib
-import unittest
 import subprocess
+import sys
+import unittest
+import uuid
 
 EXPECTED_USER_NAME = "dev"
 EXPECTED_USER_HOME = "/home/dev"
@@ -194,8 +194,9 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("cfn-lint --version")
 
     def test_cfn_square(self):
-        self.assertEqual("/home/dev/.local/bin/cf", shutil.which("cf"))
-        self.zsh_can_access("cf --version")
+        if self.python_version in ['3.8', '3.9']:
+            self.assertEqual("/home/dev/.local/bin/cf", shutil.which("cf"))
+            self.zsh_can_access("cf --version")
 
     def test_cfn_nag(self):
         self.assertEqual("/usr/local/bin/cfn_nag", shutil.which("cfn_nag"))
@@ -247,7 +248,7 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("linkchecker --version")
 
     def test_just(self):
-        self.assertEqual("/usr/bin/just", shutil.which("just"))
+        self.assertEqual("/home/dev/.nix-profile/bin/just", shutil.which("just"))
         self.zsh_can_access("just --version")
 
     def test_csvtool(self):

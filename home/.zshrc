@@ -1,4 +1,5 @@
 # Lines configured by zsh-newuser-install
+export USER=dev
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
@@ -8,7 +9,7 @@ bindkey -e
 zstyle :compinstall filename '/home/dev/.zshrc'
 
 autoload -Uz compinit
-compinit
+# compinit
 # End of lines added by compinstall
 
 # Prompt config
@@ -27,9 +28,6 @@ COLON=':%F{cyan}'
 PROMPT="%K{235}${DIVIDER}%F{cyan}%T${DIVIDER}path${COLON}%~${DIVIDER}aws${COLON}\${AWSUME_PROFILE}${DIVIDER}git${COLON}\${vcs_info_msg_0_}${DIVIDER}?${COLON}%?${DIVIDER}
 %k%F{green}$%f "
 
-if [[ -d ~/.zsh-extra ]]; then
-  for f in ~/.zsh-extra/*; do source $f; done
-fi
 
 
 # Install vscode extensions
@@ -45,9 +43,13 @@ if [ "2" -gt $SSH_AGENT_LINES ] ; then
 fi
 . ~/.ssh-env-vars
 
-# Configure just
-fpath=(/home/dev/.just/zsh-autocomplete/ $fpath)
-
 # Aliases
 alias j=just
 alias docker="sudo docker"
+
+# Run any extra scripts
+if [[ -d ~/.zsh-extra ]]; then
+  for f in ~/.zsh-extra/*; do source $f; done
+fi
+
+# Note compinit needs to be before the nvm completion script line.
