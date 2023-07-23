@@ -39,3 +39,6 @@ fi
 # Move virtual environment to workspace template dir, to be copied to volume later
 mkdir -p ${workspace_template_python_dir}
 mv -v ${workspace_python_dir}/${python_version} ${workspace_template_python_dir}
+
+# Clear pip cache
+rm -rf /home/dev/.cache/pip

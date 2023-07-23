@@ -248,7 +248,7 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("linkchecker --version")
 
     def test_just(self):
-        self.assertEqual("/home/dev/.nix-profile/bin/just", shutil.which("just"))
+        self.assertEqual("/usr/local/bin/just", shutil.which("just"))
         self.zsh_can_access("just --version")
 
     def test_csvtool(self):

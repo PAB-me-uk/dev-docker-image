@@ -20,3 +20,4 @@ default-mysql-client
 p7zip-full
 linkchecker
 csvtool
+fzf

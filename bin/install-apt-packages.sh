@@ -16,4 +16,6 @@ count=$(grep -cv '^\s*$\|^\s*\#' ${file}) || true
 if [[ ${count} -ne 0 ]]; then
   grep -v '^\s*$\|^\s*\#' ${file} | xargs apt-get install -y
 fi
+
+# Clear cache.
 apt-get clean

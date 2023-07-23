@@ -26,8 +26,8 @@ ENV IMAGE_WORKSPACE_DIR=${WORKSPACE_DIR}
 ENV IMAGE_WORKSPACE_TEMPLATE_DIR=${WORKSPACE_TEMPLATE_DIR}
 ENV IMAGE_CUSTOMISE_DIR=${CUSTOMISE_DIR}
 
-COPY dependencies/packages.txt ${DEPENDENCIES_DIR}/
-COPY bin/install-apt-packages.sh /usr/local/bin/
+COPY dependencies/* ${DEPENDENCIES_DIR}/
+COPY bin/* /usr/local/bin/
 
 SHELL ["/bin/bash", "-c"]
 
@@ -62,9 +62,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     # Install Session Manager Plugin
     && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
     && dpkg -i session-manager-plugin.deb \
+    && rm session-manager-plugin.deb \
     # Install GitHub CLI
     && wget -q https://github.com/cli/cli/releases/download/v2.22.1/gh_2.22.1_linux_amd64.deb \
     && dpkg -i gh_2.22.1_linux_amd64.deb \
+    && rm gh_2.22.1_linux_amd64.deb \
     # Install cfn-nag
     && gem install cfn-nag \
     # Install Dart Sass
@@ -79,6 +81,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && tar -xvf steampipe_linux_amd64.tar.gz \
     && rm steampipe_linux_amd64.tar.gz \
     && mv steampipe /usr/local/bin/ \
+    # Install Just
+    && install-just.sh --to /usr/local/bin \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
@@ -107,39 +111,19 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # Copy files to user home, including subdirectories
 COPY --chown=${USER_UID} home/. ${USER_HOME}/
 
-# Run as user
-# Install nix, just, nodejs lts and steampipe plugins
-RUN su - ${USER_NAME} -c "\
-    sh <(curl -L https://nixos.org/nix/install) --no-daemon \
-    && . /home/dev/.nix-profile/etc/profile.d/nix.sh \
-    && nix-env -iA nixpkgs.just \
-    && echo '# Just autocomplete' >> ~/.zshrc \
-    && echo 'fpath=(\"\$(which just | xargs realpath | xargs dirname)/../share/zsh/site-functions/\" \$fpath)' >> ~/.zshrc \
-    && steampipe plugin install aws awscfn terraform jira \
-"
-
-COPY dependencies/* ${DEPENDENCIES_DIR}/
-
-COPY bin/* /usr/local/bin/
-
 SHELL ["/bin/zsh", "-c"]
-
 # Run as user
 #   Switch to zsh
 #   Install python pip dependencies
 #   Install python pipx depedancies
-#   Configure awsume
-#   Setup just autocompletions (must be before nvm)
+#   Install steampip plugins
 #   Install nvm
+#   Install zsh autosuggestions
 RUN su - ${USER_NAME} -c "\
     export PATH=\"${USER_HOME}/.local/bin/:${PATH}\" \
     && printf \"zsh\\n\" >> ~/.bashrc \
     && install-python-packages.sh ${DEPENDENCIES_DIR} ${IMAGE_WORKSPACE_DIR} ${IMAGE_WORKSPACE_TEMPLATE_DIR} ${IMAGE_PYTHON_VERSION} \
-    "
-
-RUN su - ${USER_NAME} -c "\
-    ~/.local/bin/awsume-configure --shell zsh --autocomplete-file ~/.zshrc --alias-file ~/.zshrc \
-    && echo compinit >> ~/.zshrc \
+    && steampipe plugin install aws awscfn terraform jira \
     && cd /tmp \
     && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh \
     && bash ./install.sh \
@@ -148,6 +132,11 @@ RUN su - ${USER_NAME} -c "\
     && nvm alias default node \
     && nvm cache clear \
     && rm install.sh \
+    && mkdir -p ~/.zsh \
+    && git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions \
+    && ~/.local/bin/awsume-configure --shell zsh \
+    && mkdir -p ~/.just/zsh-autocomplete \
+    && just --completions zsh > ~/.just/zsh-autocomplete/_just \
     "
 
 # Copy customisation files to user home
