@@ -1,20 +1,19 @@
 # Place Visual Studio Code extension below, one per line.
 
 bibhasdn.unique-lines
-dbaeumer.vscode-eslint
+charliermarsh.ruff
 eastman.vscode-cfn-nag
 esbenp.prettier-vscode
 hashicorp.terraform
 kddejong.vscode-cfn-lint
 moshfeu.compare-folders
-ms-python.autopep8
 ms-python.black-formatter
-ms-python.isort
 ms-python.python
 ms-python.vscode-pylance
 ms-toolsai.jupyter
 oderwat.indent-rainbow
 Orta.vscode-jest
+rome.rome
 ryu1kn.partial-diff
 streetsidesoftware.code-spell-checker
 thamaraiselvam.remove-blank-lines

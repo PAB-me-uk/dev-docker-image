@@ -1,11 +1,8 @@
 {
   "cfnLint.path": "${env:IMAGE_USER_HOME_BIN}/cfn-lint",
   "cfnNagLint.path": "/usr/local/bin/cfn_nag",
+
   "python.defaultInterpreterPath": "${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/python",
-  "python.formatting.autopep8Path": "${env:IMAGE_USER_HOME_BIN}/autopep8",
-  "python.formatting.blackPath": "${env:IMAGE_USER_HOME_BIN}/black",
-  "python.linting.mypyPath": "/home/dev/.local/bin/mypy",
-  "python.linting.prospectorPath": "${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/prospector",
 
   "terraform.languageServer.terraform.path": "/usr/bin/terraform",
 
@@ -41,6 +38,9 @@
     "editor.formatOnSaveMode": "file"
   },
 
+  "black-formatter.path": ["/home/dev/.local/bin/black"],
+  "black-formatter.args": ["--line-length=100"],
+
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.detectIndentation": false,
@@ -52,35 +52,7 @@
       "source.organizeImports": true
     }
   },
-
-  "isort.args": ["--profile", "black", "--line-length", "100"],
-  "python.formatting.provider": "black",
-  "python.formatting.autopep8Args": [
-    "--max-line-length=100",
-    "--indent-size=4"
-  ],
-  "python.formatting.blackArgs": ["--line-length=100"],
-  "python.linting.prospectorEnabled": true,
-  "python.linting.enabled": true,
-  "python.linting.prospectorArgs": [
-    "--full-pep8",
-    "--max-line-length",
-    "100",
-    "--strictness",
-    "medium"
-  ],
   "python.analysis.typeCheckingMode": "off",
-  "python.linting.mypyEnabled": false,
-  "python.linting.mypyArgs": [
-    "--strict",
-    "--python-executable=${env:IMAGE_WORKSPACE_DIR}/.python/${env:IMAGE_PYTHON_VERSION}/bin/python"
-  ],
-  "python.linting.banditEnabled": false,
-  "python.linting.flake8Enabled": false,
-  "python.linting.pycodestyleEnabled": false,
-  "python.linting.pydocstyleEnabled": false,
-  "python.linting.pylamaEnabled": false,
-  "python.linting.pylintEnabled": false,
   "python.analysis.autoImportCompletions": false,
   "python.analysis.diagnosticSeverityOverrides": {
     "reportMissingImports": "none"
@@ -88,7 +60,8 @@
   "python.languageServer": "Pylance",
 
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": false,
+    "source.fixAll.ruff": false
   },
   "eslint.workingDirectories": [
     {
@@ -98,8 +71,11 @@
   "prettier.singleQuote": true,
   "javascript.updateImportsOnFileMove.enabled": "never",
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "rome.rome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",

@@ -8,3 +8,4 @@ pip-tools
 poetry
 cfn-flip
 mypy
+ruff

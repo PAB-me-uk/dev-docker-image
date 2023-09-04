@@ -75,12 +75,8 @@ class Tests(unittest.TestCase):
         file_stat = os.stat(file)
         perms = oct(file_stat.st_mode)[-3:]
         self.assertEqual("644", perms, msg="Unexpected file permissions")
-        self.assertEqual(
-            os.geteuid(), file_stat.st_uid, msg="Unexpected file ownership user"
-        )
-        self.assertEqual(
-            os.getgid(), file_stat.st_gid, msg="Unexpected file ownership group"
-        )
+        self.assertEqual(os.geteuid(), file_stat.st_uid, msg="Unexpected file ownership user")
+        self.assertEqual(os.getgid(), file_stat.st_gid, msg="Unexpected file ownership group")
 
         try:
             os.remove(file)
@@ -169,10 +165,9 @@ class Tests(unittest.TestCase):
         self.assertEqual("/usr/bin/jq", shutil.which("jq"))
         self.all_shells_can_access("jq --version")
 
-    def test_prospector(self):
-        self.assertEqual(
-            f"{self.workspace_dir}/.python/{self.python_version}/bin/prospector", shutil.which("prospector"))
-        self.zsh_can_access("prospector --version")
+    def test_ruff(self):
+        self.assertEqual("/home/dev/.local/bin/ruff", shutil.which("ruff"))
+        self.zsh_can_access("ruff --version")
 
     def test_autopep8(self):
         self.assertEqual("/home/dev/.local/bin/autopep8", shutil.which("autopep8"))
@@ -194,7 +189,7 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("cfn-lint --version")
 
     def test_cfn_square(self):
-        if self.python_version in ['3.8', '3.9']:
+        if self.python_version in ["3.8", "3.9"]:
             self.assertEqual("/home/dev/.local/bin/cf", shutil.which("cf"))
             self.zsh_can_access("cf --version")
 
@@ -207,9 +202,7 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("poetry --version")
 
     def test_pip_compile(self):
-        self.assertEqual(
-            "/home/dev/.local/bin/pip-compile", shutil.which("pip-compile")
-        )
+        self.assertEqual("/home/dev/.local/bin/pip-compile", shutil.which("pip-compile"))
         self.zsh_can_access("pip-compile --version")
 
     def test_pip_sync(self):
