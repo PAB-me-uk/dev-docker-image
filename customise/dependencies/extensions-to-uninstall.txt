@@ -1,0 +1,3 @@
+# Place Visual Studio Code extension below, one per line.
+
+# Hint: type `code --list-extensions` in a terminal to get list.

@@ -60,21 +60,15 @@
   "python.languageServer": "Pylance",
 
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": false,
     "source.fixAll.ruff": false
   },
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
   "prettier.singleQuote": true,
   "javascript.updateImportsOnFileMove.enabled": "never",
   "[javascript]": {
-    "editor.defaultFormatter": "rome.rome",
+    "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": true
+      "source.organizeImports.biome": true
     }
   },
   "[json]": {

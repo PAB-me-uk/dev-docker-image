@@ -34,7 +34,7 @@ code --install-extension ms-vscode-remote.remote-containers
 code --install-extension ms-python.python
 code --install-extension ms-python.vscode-pylance
 code --install-extension ms-toolsai.jupyter
-code --install-extension rome.rome
+code --install-extension biomejs.biome
 code --install-extension charliermarsh.ruff
 code --install-extension esbenp.prettier-vscode
 code --install-extension Orta.vscode-jest

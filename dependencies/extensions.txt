@@ -1,6 +1,7 @@
 # Place Visual Studio Code extension below, one per line.
 
 bibhasdn.unique-lines
+biomejs.biome
 charliermarsh.ruff
 eastman.vscode-cfn-nag
 esbenp.prettier-vscode
@@ -13,7 +14,6 @@ ms-python.vscode-pylance
 ms-toolsai.jupyter
 oderwat.indent-rainbow
 Orta.vscode-jest
-rome.rome
 ryu1kn.partial-diff
 streetsidesoftware.code-spell-checker
 thamaraiselvam.remove-blank-lines
