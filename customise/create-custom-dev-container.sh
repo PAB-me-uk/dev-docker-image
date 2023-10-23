@@ -1,8 +1,15 @@
 #!/bin/bash
 set -e
 
+arch=$(uname -m)
+if [[ "${arch}" == "arm64" || "${arch}" == "aarch64" ]]; then
+  repo=papasfritas/dev-python-arm # arm64
+else
+  repo=pabuk/dev-python # intel/amd64
+fi
+
 if [[ $# -ne 3 ]]; then
-    echo "$0: Three arguments are required: name for the new container, name of volume to mount, and python version (e.g. `3.6`)"
+    echo "$0: Three arguments are required: name for the new container, name of volume to mount, and python version (e.g. '3.9')"
     echo "This builds the image, creates volume if it does not exist, then creates and runs container removing any existing container with same name"
     exit 4
 fi
@@ -14,7 +21,7 @@ mkdir -p ./home
 
 if [[ -z "${NO_PULL}" ]]; then
   echo Getting latest image
-  sudo docker pull pabuk/dev-python:$3
+  sudo docker pull ${repo}:$3
 fi
 
 export DOCKER_BUILDKIT=0

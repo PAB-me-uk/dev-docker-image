@@ -59,7 +59,11 @@ Press ctrl+shift+p for command palette and choose "Preferences: Open Settings (J
 ### MacOs
 
 ```bash
+# For Intel
 docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
+
+# Or for Arm (e.g. M1)
+docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock papasfritas/dev-python-arm:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
 ```
 
 ### Windows

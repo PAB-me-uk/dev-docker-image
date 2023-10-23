@@ -40,51 +40,56 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && install-apt-packages.sh ${DEPENDENCIES_DIR}/packages.txt \
     # Install Terraform and Docker
     && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list \
-    && wget -q https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
-    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list
+
+RUN wget -q https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
+    && add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y terraform docker-ce-cli docker-compose-plugin ruby-dev \
-    # Install AWS CLI
-    && cd /tmp \
-    && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
-    && unzip -q awscli-exe-linux-x86_64.zip \
-    && rm awscli-exe-linux-x86_64.zip \
+    && apt-get install -y terraform docker-ce-cli docker-compose-plugin ruby-dev
+
+# Install AWS CLI
+RUN cd /tmp \
+    && wget -q https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip \
+    && unzip -q awscli-exe-linux-aarch64.zip \
+    && rm awscli-exe-linux-aarch64.zip \
     && /bin/bash ./aws/install \
-    && rm -rf ./aws \
-    # Install AWS SAM CLI
-    && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip \
-    && unzip -q aws-sam-cli-linux-x86_64.zip -d sam-installation \
-    && rm aws-sam-cli-linux-x86_64.zip \
-    && /bin/bash ./sam-installation/install \
-    && rm -rf ./sam-installation \
-    # Install Session Manager Plugin
-    && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
-    && dpkg -i session-manager-plugin.deb \
-    && rm session-manager-plugin.deb \
-    # Install GitHub CLI
-    && wget -q https://github.com/cli/cli/releases/download/v2.22.1/gh_2.22.1_linux_amd64.deb \
-    && dpkg -i gh_2.22.1_linux_amd64.deb \
-    && rm gh_2.22.1_linux_amd64.deb \
-    # Install cfn-nag
-    && gem install cfn-nag \
+    && rm -rf ./aws
+
+# # Install AWS SAM CLI - #### linux arm64 zip not available JvS 23/10/23
+# "We recommend installing the AWS SAM CLI into a virtual environment... using pip."
+RUN pip install --upgrade aws-sam-cli
+#### but "WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv"
+# Install Session Manager Plugin
+RUN wget -q "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_arm64/session-manager-plugin.deb" \
+    && dpkg -i session-manager-plugin.deb
+
+# # Install GitHub CLI
+#### gh_2.22.1_linux_arm64.rpm' is not a Debian format archive
+# RUN wget -q https://github.com/cli/cli/releases/download/v2.22.1/gh_2.22.1_linux_arm64.rpm \
+#     && dpkg -i gh_2.22.1_linux_arm64.rpm \
+#     && rm gh_2.22.1_linux_arm64.rpm
+
+# Install cfn-nag
+RUN gem install cfn-nag \
     # Install Dart Sass
-    && wget -q https://github.com/sass/dart-sass/releases/download/1.58.0/dart-sass-1.58.0-linux-x64.tar.gz \
-    && tar -xvf dart-sass-1.58.0-linux-x64.tar.gz \
-    && rm dart-sass-1.58.0-linux-x64.tar.gz \
+    && wget -q https://github.com/sass/dart-sass/releases/download/1.58.0/dart-sass-1.58.0-linux-arm64.tar.gz \
+    && tar -xvf dart-sass-1.58.0-linux-arm64.tar.gz \
+    && rm dart-sass-1.58.0-linux-arm64.tar.gz \
     && mv dart-sass/sass /usr/local/bin/ \
     && mv dart-sass/src /usr/local/bin/ \
-    && rm -rf dart-sass \
-    # Install steampipe
-    && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
-    && tar -xvf steampipe_linux_amd64.tar.gz \
-    && rm steampipe_linux_amd64.tar.gz \
+    && rm -rf dart-sass
+
+# Install steampipe
+RUN wget -q https://github.com/turbot/steampipe/releases/download/v0.21.1/steampipe_linux_arm64.tar.gz \
+    && tar -xvf steampipe_linux_arm64.tar.gz \
+    && rm steampipe_linux_arm64.tar.gz \
     && mv steampipe /usr/local/bin/ \
     # Install Just
-    && install-just.sh --to /usr/local/bin \
-    # Create user and group, allow sudo
-    && groupadd --gid ${USER_GID} ${GROUP_NAME} \
+    && install-just.sh --to /usr/local/bin
+
+# Create user and group, allow sudo
+RUN groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
     && usermod --groups sudo  --shell /usr/bin/zsh ${USER_NAME} \
     && echo "${USER_NAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USER_NAME} \
