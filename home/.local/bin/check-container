@@ -75,8 +75,12 @@ class Tests(unittest.TestCase):
         file_stat = os.stat(file)
         perms = oct(file_stat.st_mode)[-3:]
         self.assertEqual("644", perms, msg="Unexpected file permissions")
-        self.assertEqual(os.geteuid(), file_stat.st_uid, msg="Unexpected file ownership user")
-        self.assertEqual(os.getgid(), file_stat.st_gid, msg="Unexpected file ownership group")
+        self.assertEqual(
+            os.geteuid(), file_stat.st_uid, msg="Unexpected file ownership user"
+        )
+        self.assertEqual(
+            os.getgid(), file_stat.st_gid, msg="Unexpected file ownership group"
+        )
 
         try:
             os.remove(file)
@@ -202,7 +206,9 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("poetry --version")
 
     def test_pip_compile(self):
-        self.assertEqual("/home/dev/.local/bin/pip-compile", shutil.which("pip-compile"))
+        self.assertEqual(
+            "/home/dev/.local/bin/pip-compile", shutil.which("pip-compile")
+        )
         self.zsh_can_access("pip-compile --version")
 
     def test_pip_sync(self):
@@ -251,6 +257,10 @@ class Tests(unittest.TestCase):
     def test_gh(self):
         self.assertEqual("/usr/bin/gh", shutil.which("gh"))
         self.zsh_can_access("gh --version")
+
+    def test_biome(self):
+        self.assertEqual("/usr/local/bin/biome", shutil.which("biome"))
+        self.zsh_can_access("biome --version")
 
 
 if __name__ == "__main__":

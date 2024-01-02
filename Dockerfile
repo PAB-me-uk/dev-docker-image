@@ -81,6 +81,10 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && tar -xvf steampipe_linux_amd64.tar.gz \
     && rm steampipe_linux_amd64.tar.gz \
     && mv steampipe /usr/local/bin/ \
+    # Install Biome
+    && wget -q https://github.com/biomejs/biome/releases/download/cli%2Fv1.4.1/biome-linux-x64 \
+    && mv biome-linux-x64 /usr/local/bin/biome \
+    && chmod +x /usr/local/bin/biome \
     # Install Just
     && install-just.sh --to /usr/local/bin \
     # Create user and group, allow sudo

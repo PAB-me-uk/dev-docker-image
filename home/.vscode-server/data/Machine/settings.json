@@ -64,6 +64,9 @@
   },
   "prettier.singleQuote": true,
   "javascript.updateImportsOnFileMove.enabled": "never",
+
+  "biome.lspBin": "/usr/local/bin/biome",
+
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true,
