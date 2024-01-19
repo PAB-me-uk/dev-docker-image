@@ -28,7 +28,7 @@ pip install --no-cache-dir -r ${dependencies_dir}/requirements.txt
 # Install PIPX packages
 count=$(grep -cv '^\s*$\|^\s*\#' ${dependencies_dir}/pipx.txt) || true
 if [[ ${count} -ne 0 ]]; then
-  grep -v '^\s*$\|^\s*\#' ${dependencies_dir}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' {}
+  grep -v '^\s*$\|^\s*\#' ${dependencies_dir}/pipx.txt | xargs -I {} -n1 pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' --preinstall setuptools {}
 fi
 
 if [[ "${python_version}" == "3.8" ]] || [[ "${python_version}" == "3.9" ]] ; then

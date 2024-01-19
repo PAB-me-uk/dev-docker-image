@@ -5,6 +5,7 @@ pipx
 pip-chill
 ipykernel
 boto3
+setuptools
 
 # Fixed linting dependecies
 

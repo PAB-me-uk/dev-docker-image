@@ -50,18 +50,20 @@ class Tests(unittest.TestCase):
         return output
 
     def zsh_can_access(self, command):
-        self.shell_can_access(shell="/bin/zsh", command=command, environment=os.environ)
+        return self.shell_can_access(
+            shell="/bin/zsh", command=command, environment=os.environ
+        )
 
     def bash_can_access(self, command):
-        self.shell_can_access(shell="/bin/bash", command=command)
+        return self.shell_can_access(shell="/bin/bash", command=command)
 
     def sh_can_access(self, command):
-        self.shell_can_access(shell="/bin/sh", command=command)
+        return self.shell_can_access(shell="/bin/sh", command=command)
 
     def all_shells_can_access(self, command):
         self.zsh_can_access(command)
         self.bash_can_access(command)
-        self.sh_can_access(command)
+        return self.sh_can_access(command)
 
     def file_creation_perms_and_deletion(self, path):
         file = os.path.join(path, uuid.uuid4().hex)
@@ -163,7 +165,9 @@ class Tests(unittest.TestCase):
 
     def test_terraform(self):
         self.assertEqual("/usr/bin/terraform", shutil.which("terraform"))
-        self.all_shells_can_access("terraform --version")
+        output = self.all_shells_can_access("terraform --version")
+        version = os.environ.get("IMAGE_TERRAFORM_VERSION")
+        self.assertIn(f"Terraform v{version}", output)
 
     def test_jq(self):
         self.assertEqual("/usr/bin/jq", shutil.which("jq"))

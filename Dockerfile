@@ -25,6 +25,8 @@ ENV IMAGE_USER_GID=${USER_GID}
 ENV IMAGE_WORKSPACE_DIR=${WORKSPACE_DIR}
 ENV IMAGE_WORKSPACE_TEMPLATE_DIR=${WORKSPACE_TEMPLATE_DIR}
 ENV IMAGE_CUSTOMISE_DIR=${CUSTOMISE_DIR}
+ENV IMAGE_TERRAFORM_VERSION=1.5.7
+ENV IMAGE_JUST_VERSION=1.23.0
 
 COPY dependencies/* ${DEPENDENCIES_DIR}/
 COPY bin/* /usr/local/bin/
@@ -38,14 +40,21 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get purge -y imagemagick imagemagick-6-common \
     # Install packages
     && install-apt-packages.sh ${DEPENDENCIES_DIR}/packages.txt \
-    # Install Terraform and Docker
-    && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list \
-    && wget -q https://download.docker.com/linux/debian/gpg && apt-key add gpg && rm gpg \
-    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+    # Install Docker
+    && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y terraform docker-ce-cli docker-compose-plugin ruby-dev \
+    && apt-get install -y docker-ce-cli docker-compose-plugin ruby-dev \
+    # Install Terraform
+    && wget -q https://releases.hashicorp.com/terraform/${IMAGE_TERRAFORM_VERSION}/terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
+    && unzip -q terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
+    && rm terraform_1.5.7_linux_amd64.zip \
+    && mv terraform /usr/bin/ \
+    # Old version which gets latest Terraform version.
+    # && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    # && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list \
+    # && apt-get install -y terraform  \
     # Install AWS CLI
     && cd /tmp \
     && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
@@ -86,7 +95,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && mv biome-linux-x64 /usr/local/bin/biome \
     && chmod +x /usr/local/bin/biome \
     # Install Just
-    && install-just.sh --to /usr/local/bin \
+    && wget -q https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
+    && tar -xvf just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz -C /usr/local/bin just \
+    && rm just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
     # Create user and group, allow sudo
     && groupadd --gid ${USER_GID} ${GROUP_NAME} \
     && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \
@@ -129,7 +140,7 @@ RUN su - ${USER_NAME} -c "\
     && install-python-packages.sh ${DEPENDENCIES_DIR} ${IMAGE_WORKSPACE_DIR} ${IMAGE_WORKSPACE_TEMPLATE_DIR} ${IMAGE_PYTHON_VERSION} \
     && steampipe plugin install aws awscfn terraform jira \
     && cd /tmp \
-    && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh \
+    && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh \
     && bash ./install.sh \
     && . ~/.nvm/nvm.sh \
     && nvm install --lts \
@@ -138,9 +149,9 @@ RUN su - ${USER_NAME} -c "\
     && rm install.sh \
     && mkdir -p ~/.zsh \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions \
-    && ~/.local/bin/awsume-configure --shell zsh \
     && mkdir -p ~/.just/zsh-autocomplete \
     && just --completions zsh > ~/.just/zsh-autocomplete/_just \
+    && ~/.local/bin/awsume-configure --shell zsh \
     "
 
 # Copy customisation files to user home

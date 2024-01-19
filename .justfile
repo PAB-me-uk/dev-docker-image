@@ -18,6 +18,7 @@ build-image python-version no-cache="":
   set -euo pipefail
   image_name_and_tag="{{image_name}}:{{python-version}}"
   temp_volume_name=temp-volume-for-check-container-{{python-version}}
+  sudo docker volume rm -f ${temp_volume_name} 2> /dev/null 1> /dev/null || true
 
   echo Building image ${image_name_and_tag} with python version: {{python-version}}
   # export DOCKER_BUILDKIT=0
@@ -36,7 +37,7 @@ build-image python-version no-cache="":
   echo Image ${image_name_and_tag} built successfully
 
 # Build all images.
-build-images no-cache="": (build-image "3.8" no-cache) (build-image "3.9" no-cache) (build-image "3.10" no-cache) (build-image "3.11" no-cache)
+build-images no-cache="": (build-image "3.8" no-cache) (build-image "3.9" no-cache) (build-image "3.10" no-cache) (build-image "3.11" no-cache) (build-image "3.12" no-cache)
 
 build-and-upload-image python-version no-cache="":
   sudo docker login
@@ -46,7 +47,7 @@ build-and-upload-image python-version no-cache="":
   sudo docker push "{{image_name}}:{{python-version}}"
   echo Image "{{image_name}}:{{python-version}}" uploaded successfully
 
-build-and-upload-images no-cache="": (build-and-upload-image "3.8" no-cache) (build-and-upload-image "3.9" no-cache) (build-and-upload-image "3.10" no-cache) (build-and-upload-image "3.11" no-cache)
+build-and-upload-images no-cache="": (build-and-upload-image "3.8" no-cache) (build-and-upload-image "3.9" no-cache) (build-and-upload-image "3.10" no-cache) (build-and-upload-image "3.11" no-cache) (build-and-upload-image "3.12" no-cache)
 
 connect-to-image python-version:
   #!/usr/bin/env bash
