@@ -1,11 +1,12 @@
 # Place Python utilities to install with pipx below, one per line.
 # No fixed versions please as not compatible with all python versions, see requirements.txt for normal python packages.
-awsume
-cfn-lint
+ansible-lint
 autopep8
+awsume
 black
+cfn-flip
+cfn-lint
+mypy
 pip-tools
 poetry
-cfn-flip
-mypy
 ruff
