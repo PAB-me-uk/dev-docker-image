@@ -91,7 +91,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm steampipe_linux_amd64.tar.gz \
     && mv steampipe /usr/local/bin/ \
     # Install Biome
-    && wget -q https://github.com/biomejs/biome/releases/download/cli%2Fv1.4.1/biome-linux-x64 \
+    && wget -q https://github.com/biomejs/biome/releases/download/cli%2Fv1.8.2/biome-linux-x64 \
     && mv biome-linux-x64 /usr/local/bin/biome \
     && chmod +x /usr/local/bin/biome \
     # Install Just
