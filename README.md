@@ -2,19 +2,83 @@
 
 ## Windows Prerequisites
 
-[Window Subsystem For Linux 2.0](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+### Windows Subsystem for Linux
 
-[Docker Desktop](https://docs.docker.com/docker-for-windows/wsl/)
+#### Install WSL
 
-_Follow configuration instructions from links above_
+Install WSL 2.0 from the Microsoft Store **or** via **Windows Command Prompt** using the following command:
 
-Ensure your docker desktop is not the default WSL OS use `wsl --list ` and `wsl --set-default YOUR_OS_NAME_HERE` to choose the OS you installed from the microsoft store
+```
+wsl --install
+```
 
-## Mac Prerequisites
+In a Windows command prompt run these commands:
 
-[Docker Desktop](https://docs.docker.com/docker-for-mac/install/)
+```bash
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+wsl --update
+wsl --set-default-version 2
+wsl
+```
 
-_Follow configuration instructions from link above_
+#### Install Ubuntu
+
+From the **WSL terminal** run these commands:
+
+```bash
+wsl --install Ubuntu-24.04
+wsl --set-default Ubuntu-24.04
+wsl --list
+```
+
+#### Configure WSL
+
+From the **WSL terminal** run the following command:
+
+```bash
+sudo nano /etc/wsl.conf
+```
+
+Paste in the following settings, then press ctrl+o then ctrl+x to save and exit nano.
+
+```
+[boot]
+systemd=true
+command="echo nameserver 1.1.1.1 > /etc/resolv.conf && echo nameserver 1.0.0.1 >> /etc/resolv.conf"
+[network]
+generateResolvConf = false
+```
+
+#### Restart WSL
+
+From a normal **Windows Command Prompt** run the following commands:
+
+```
+wsl --shutdown
+wsl
+```
+
+### Docker Install
+
+From the **WSL terminal** follow the instruction via the link below
+
+[Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+
+From the **WSL terminal** run the following commands:
+
+```
+sudo usermod -aG docker $USER
+exit
+```
+
+#### Restart WSL
+
+From a normal **Windows Command Prompt** run the following commands:
+
+```
+wsl --shutdown
+wsl
+```
 
 ## Visual Studio Code
 
@@ -56,34 +120,12 @@ Press ctrl+shift+p for command palette and choose "Preferences: Open Settings (J
 
 ## Bootstrap first ever image
 
-### MacOs
+From the **WSL terminal** run the following commands:
 
-```bash
-docker run --rm -it --env HOST_USER_HOME=${HOME} --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
 ```
-
-### Windows
-
-**_This must be done in your main WSL OS (type `wsl` in command prompt)_**
-
-Identify you windows user id via `ls /mnt/c/Users/` and replace YOUR_WINDOWS_USERNAME below
-
-```bash
-docker run --rm -it --env HOST_USER_HOME=/mnt/c/Users/YOUR_WINDOWS_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
-```
-
-### WSL/Linux/Ubuntu
-
-If you use WSL as your main development environment it is likely that the following key folders files are in your home area in your WSL OS..
-
-- .aws (AWS config folder)
-- .ssh (SSH keys folder)
-- .gitconfig (GitHub configuration)
-
-If this is the case then you should consider the WSL as your host and create your initial image using your WSL/Linux home path..
-
-```bash
-docker run --rm -it --env HOST_USER_HOME=/home/YOUR_WSL_USERNAME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.9 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.9"
+mkdir -p ~/.aws ~/.ssh ~/.zsh-extra
+touch .gitconfig
+docker run --rm -it --env HOST_USER_HOME=$HOME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.12 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.12 .zsh-extra"
 ```
 
 The initial container and any custom containers (see below) will make use of this HOST_USER_NAME variable to mount the key files folders from the correct location.
@@ -100,13 +142,13 @@ Or use VSCode Docker and Remote Container Extensions to attach VSCode directly i
 
 ## Creating further containers
 
-Once you have a container made from the bootstrap process above you can simply create further containers from within the dev container itself as below
+Once you have a container made from the bootstrap process above you can simply create further containers from within any dev container as below
 
 ```bash
-create-dev-container another-container another-volume 3.9
+create-dev-container another-container another-volume 3.12 .zsh-extra
 ```
 
-Note this does not have to be the same python version as the container itself
+Note this does not have to be the same python version as the existing container itself
 
 ## Important!
 
@@ -114,12 +156,6 @@ Volume is mounted as `/workspace` files within this directory will be persisted 
 
 Python dependencies are copied across to the volume during first launch and are stored in the directory /workspace/.python/3.x any further packages you install will also be placed here and will be available to any containers with this volume mounted that share the same Python version.
 Performance
-
-If you are not using WSL 2.0 then and you are using your container as your main development environment you may wish to increase available CPU’s, Memory or Disk space available to the Docker Desktop VM after checking memory usage and disk space on your host machine.
-
-If you are using WSL 2.0 then you can already access all of the main systems resources.
-
-## Other commands
 
 ### Stop Container
 
@@ -188,9 +224,9 @@ Run the command below to create a new custom dev container:
 
 ```bash
 cd ~/customise
-./create-custom-dev-container.sh custom-container-name volume-name 3.9
+./create-custom-dev-container.sh custom-container-name volume-name 3.12
 ```
 
-_Replace `3.9` above with desired Python version_
+_Replace `3.12` above with desired Python version_
 
 Note: You may wish to backup or version control your changes to the customisation files, as a minimum it is worth copying them to a volume e.g. `/workspace/`
