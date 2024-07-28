@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build . --no-cache --force-rm IMAGE_PYTHON_VERSION=3.12
+        run: docker build . --no-cache --force-rm --build-arg IMAGE_PYTHON_VERSION=3.12
   test:
     runs-on: ubuntu-latest
     steps:
