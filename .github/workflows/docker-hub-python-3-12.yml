@@ -15,19 +15,21 @@ env:
 
 jobs:
   build:
+    if: true
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
         run: docker build . -t ${{ env.IMAGE_NAME }}:${{ env.PYTHON_VERSION }} --no-cache --force-rm --build-arg IMAGE_PYTHON_VERSION=3.12
   test:
+    if: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Test the Docker image
         run: docker run --rm -t ${{ env.IMAGE_NAME }}:${{ env.PYTHON_VERSION }} bin/zsh -c "source ~/.zshrc && check-container"
   push_to_registry:
+    if: false
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
