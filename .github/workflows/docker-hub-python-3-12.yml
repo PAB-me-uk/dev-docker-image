@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Test the Docker image
-        run: docker container run --rm -it ${{ env.IMAGE_NAME }}:${{ env.PYTHON_VERSION }} bin/zsh -c "source ~/.zshrc && check-container"
+        run: docker container run --rm -T ${{ env.IMAGE_NAME }}:${{ env.PYTHON_VERSION }} bin/zsh -c "source ~/.zshrc && check-container"
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
