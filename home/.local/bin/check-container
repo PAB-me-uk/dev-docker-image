@@ -215,9 +215,9 @@ class Tests(unittest.TestCase):
         self.assertEqual("/home/dev/.local/bin/cfn-flip", shutil.which("cfn-flip"))
         self.zsh_can_access("cfn-flip --version")
 
-    def test_mypy(self):
-        self.assertEqual("/home/dev/.local/bin/mypy", shutil.which("mypy"))
-        self.zsh_can_access("mypy --version")
+    def test_pyright(self):
+        self.assertEqual("/home/dev/.local/bin/pyright", shutil.which("mypy"))
+        self.zsh_can_access("pyright --version")
 
     def test_sass(self):
         self.assertEqual("/usr/local/bin/sass", shutil.which("sass"))

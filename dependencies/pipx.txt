@@ -6,7 +6,7 @@ awsume
 black
 cfn-flip
 cfn-lint
-mypy
 pip-tools
 poetry
 ruff
+pyright

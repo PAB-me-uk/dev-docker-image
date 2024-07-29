@@ -67,8 +67,6 @@ connect-to-image python-version:
 # ./customise/create-custom-dev-container.sh
 # ./home/.local/bin/black-off
 # ./home/.local/bin/black-on
-# ./home/.local/bin/mypy-off
-# ./home/.local/bin/mypy-on
 
 # Done
 
