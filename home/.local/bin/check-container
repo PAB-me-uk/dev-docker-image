@@ -216,7 +216,7 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("cfn-flip --version")
 
     def test_pyright(self):
-        self.assertEqual("/home/dev/.local/bin/pyright", shutil.which("mypy"))
+        self.assertEqual("/home/dev/.local/bin/pyright", shutil.which("pyright"))
         self.zsh_can_access("pyright --version")
 
     def test_sass(self):
