@@ -6,6 +6,7 @@ charliermarsh.ruff
 eastman.vscode-cfn-nag
 esbenp.prettier-vscode
 hashicorp.terraform
+hashicorp.hcl
 kddejong.vscode-cfn-lint
 moshfeu.compare-folders
 ms-python.black-formatter

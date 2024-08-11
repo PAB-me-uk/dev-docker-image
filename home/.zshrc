@@ -66,6 +66,9 @@ if [[ -d ~/.zsh-extra ]]; then
   for f in ~/.zsh-extra/*; do source $f; done
 fi
 
+# FZF Keybindings
+[[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+
 compinit # Must be before nvm bash completion.
 
 export NVM_DIR="$HOME/.nvm"

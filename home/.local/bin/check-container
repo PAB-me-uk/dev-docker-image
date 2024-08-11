@@ -262,6 +262,30 @@ class Tests(unittest.TestCase):
         self.assertEqual("/home/dev/.local/bin/ansible-lint", shutil.which("ansible-lint"))
         self.zsh_can_access("ansible-lint --version")
 
+    def test_tflint(self):
+        self.assertEqual("/usr/local/bin/tflint", shutil.which("tflint"))
+        self.zsh_can_access("tflint --version")
+
+    def test_tfsec(self):
+        self.assertEqual("/usr/local/bin/tfsec", shutil.which("tfsec"))
+        self.zsh_can_access("tfsec --version")
+
+    def test_terragrunt(self):
+        self.assertEqual("/usr/local/bin/terragrunt", shutil.which("terragrunt"))
+        self.zsh_can_access("terragrunt --version")
+
+    def test_graphviz(self):
+        self.assertEqual("/usr/bin/dot", shutil.which("dot"))
+        self.zsh_can_access("dot -V")
+
+    def test_lastpass_cli(self):
+        self.assertEqual("/usr/bin/lpass", shutil.which("lpass"))
+        self.zsh_can_access("lpass --version")
+
+    def test_shell_check(self):
+        self.assertEqual("/usr/bin/shellcheck", shutil.which("shellcheck"))
+        self.zsh_can_access("shellcheck --version")
+
 
 if __name__ == "__main__":
     unittest.main(buffer=False)

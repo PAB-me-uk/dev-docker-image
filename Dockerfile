@@ -2,6 +2,9 @@ ARG IMAGE_PYTHON_VERSION=3.12
 # Arguments added above the FROM line are not available after the FROM line unless redefined after
 FROM python:${IMAGE_PYTHON_VERSION}
 ARG IMAGE_PYTHON_VERSION=3.12
+ARG IMAGE_TERRAFORM_VERSION=1.5.7
+ARG IMAGE_TFLINT_VERSION=0.52.0
+ARG IMAGE_TERRAGRUNT_VERSION=0.66.3
 ARG TIMEZONE=Europe/London
 ARG USER_NAME=dev
 ARG GROUP_NAME=${USER_NAME}
@@ -25,13 +28,17 @@ ENV IMAGE_USER_GID=${USER_GID}
 ENV IMAGE_WORKSPACE_DIR=${WORKSPACE_DIR}
 ENV IMAGE_WORKSPACE_TEMPLATE_DIR=${WORKSPACE_TEMPLATE_DIR}
 ENV IMAGE_CUSTOMISE_DIR=${CUSTOMISE_DIR}
-ENV IMAGE_TERRAFORM_VERSION=1.5.7
+ENV IMAGE_TERRAFORM_VERSION=${IMAGE_TERRAFORM_VERSION}
+ENV IMAGE_TFLINT_VERSION=${IMAGE_TFLINT_VERSION}
+ENV IMAGE_TERRAGRUNT_VERSION=${IMAGE_TERRAGRUNT_VERSION}
 ENV IMAGE_JUST_VERSION=1.23.0
 
 COPY dependencies/* ${DEPENDENCIES_DIR}/
 COPY bin/* /usr/local/bin/
 
 SHELL ["/bin/bash", "-c"]
+
+RUN export DEBIAN_FRONTEND=noninteractive \
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     # Set timezone
@@ -45,18 +52,29 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y docker-ce-cli docker-compose-plugin ruby-dev \
+    && apt-get install -y docker-ce-cli docker-compose-plugin ruby-dev
+
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && cd /tmp \
     # Install Terraform
+    && echo IMAGE_TERRAFORM_VERSION=${IMAGE_TERRAFORM_VERSION} \
     && wget -q https://releases.hashicorp.com/terraform/${IMAGE_TERRAFORM_VERSION}/terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
     && unzip -q terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
-    && rm terraform_1.5.7_linux_amd64.zip \
+    && rm terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
     && mv terraform /usr/bin/ \
-    # Old version which gets latest Terraform version.
-    # && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg \
-    # && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list \
-    # && apt-get install -y terraform  \
+    # Install TFlint
+    && echo IMAGE_TFLINT_VERSION=${IMAGE_TFLINT_VERSION} \
+    && export TFLINT_VERSION=v${IMAGE_TFLINT_VERSION} \
+    && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/v${IMAGE_TFLINT_VERSION}/install_linux.sh | /bin/bash -x \
+    && tflint --version \
+    && tflint --version | grep "TFLint version ${IMAGE_TFLINT_VERSION}" \
+    # # Install TFsec
+    && curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | /bin/bash \
+    # Install Terragrunt
+    && wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${IMAGE_TERRAGRUNT_VERSION}/terragrunt_linux_amd64 \
+    && mv terragrunt_linux_amd64 /usr/local/bin/terragrunt \
+    && chmod +x /usr/local/bin/terragrunt \
     # Install AWS CLI
-    && cd /tmp \
     && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
     && unzip -q awscli-exe-linux-x86_64.zip \
     && rm awscli-exe-linux-x86_64.zip \
