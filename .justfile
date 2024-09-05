@@ -6,7 +6,8 @@ root_dir := justfile_directory()
 
 image_name := "pabuk/dev-python"
 default-terraform-version := "1.5.7"
-default-tflint-version :=  "0.52.0"
+default-tflint-version :=  "0.53.0"
+default-terragrunt-version := "0.67.1"
 
 # Default recipe, runs if you just type `just`.
 [private]
@@ -14,7 +15,7 @@ default:
   just --list
 
 # Build a single image
-build-image python-version no-cache="" terraform-version="" tflint-version="":
+build-image python-version no-cache="" terraform-version="" tflint-version="" terragrunt-version="":
   #!/usr/bin/env bash
   set -euo pipefail
   image_name_and_tag="{{image_name}}:{{python-version}}"
@@ -33,6 +34,13 @@ build-image python-version no-cache="" terraform-version="" tflint-version="":
   else
     tflint_version="{{tflint-version}}"
     image_name_and_tag="${image_name_and_tag}-tfl-${tflint_version}"
+  fi
+
+  if [[ -z "{{terragrunt-version}}" ]]; then
+    terragrunt_version="{{default-terragrunt-version}}"
+  else
+    terragrunt_version="{{terragrunt-version}}"
+    image_name_and_tag="${image_name_and_tag}-tg-${terragrunt_version}"
   fi
 
   echo Building image ${image_name_and_tag} with python version: {{python-version}}
