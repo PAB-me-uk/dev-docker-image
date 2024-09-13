@@ -7,7 +7,7 @@ root_dir := justfile_directory()
 image_name := "pabuk/dev-python"
 default-terraform-version := "1.5.7"
 default-tflint-version :=  "0.53.0"
-default-terragrunt-version := "0.67.1"
+default-terragrunt-version := "0.66.9"
 
 # Default recipe, runs if you just type `just`.
 [private]
@@ -51,13 +51,15 @@ build-image python-version no-cache="" terraform-version="" tflint-version="" te
     time sudo docker build . -t ${image_name_and_tag} --progress=plain  \
     --build-arg IMAGE_PYTHON_VERSION={{python-version}} \
     --build-arg IMAGE_TERRAFORM_VERSION=${terraform_version} \
-    --build-arg IMAGE_TFLINT_VERSION=${tflint_version}
+    --build-arg IMAGE_TFLINT_VERSION=${tflint_version} \
+    --build-arg IMAGE_TERRAGRUNT_VERSION=${terragrunt_version}
   else
     echo Ignoring cache
     time sudo docker build . -t ${image_name_and_tag} --progress=plain --no-cache
     --build-arg IMAGE_PYTHON_VERSION={{python-version}} \
     --build-arg IMAGE_TERRAFORM_VERSION=${terraform_version} \
-    --build-arg IMAGE_TFLINT_VERSION=${tflint_version}
+    --build-arg IMAGE_TFLINT_VERSION=${tflint_version} \
+    --build-arg IMAGE_TERRAGRUNT_VERSION=${terragrunt_version}
   fi
   echo ---------------------------------------
   echo Testing container
