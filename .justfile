@@ -5,43 +5,23 @@ home := `echo "${HOME}"`
 root_dir := justfile_directory()
 
 image_name := "pabuk/dev-python"
-default-terraform-version := "1.5.7"
-default-tflint-version :=  "0.53.0"
-default-terragrunt-version := "0.66.9"
 
 # Default recipe, runs if you just type `just`.
 [private]
 default:
   just --list
 
+# Edit the current .justfile
+edit:
+  code {{justfile()}}
+
 # Build a single image
-build-image python-version no-cache="" terraform-version="" tflint-version="" terragrunt-version="":
+build-image python-version no-cache="":
   #!/usr/bin/env bash
   set -euo pipefail
   image_name_and_tag="{{image_name}}:{{python-version}}"
   temp_volume_name=temp-volume-for-check-container-{{python-version}}
   sudo docker volume rm -f ${temp_volume_name} 2> /dev/null 1> /dev/null || true
-
-  if [[ -z "{{terraform-version}}" ]]; then
-    terraform_version="{{default-terraform-version}}"
-  else
-    terraform_version="{{terraform-version}}"
-    image_name_and_tag="${image_name_and_tag}-tf-${terraform_version}"
-  fi
-
-  if [[ -z "{{tflint-version}}" ]]; then
-    tflint_version="{{default-tflint-version}}"
-  else
-    tflint_version="{{tflint-version}}"
-    image_name_and_tag="${image_name_and_tag}-tfl-${tflint_version}"
-  fi
-
-  if [[ -z "{{terragrunt-version}}" ]]; then
-    terragrunt_version="{{default-terragrunt-version}}"
-  else
-    terragrunt_version="{{terragrunt-version}}"
-    image_name_and_tag="${image_name_and_tag}-tg-${terragrunt_version}"
-  fi
 
   echo Building image ${image_name_and_tag} with python version: {{python-version}}
   # export DOCKER_BUILDKIT=0
@@ -49,17 +29,11 @@ build-image python-version no-cache="" terraform-version="" tflint-version="" te
   if [[ -z "{{no-cache}}" ]]; then
     echo Using cache
     time sudo docker build . -t ${image_name_and_tag} --progress=plain  \
-    --build-arg IMAGE_PYTHON_VERSION={{python-version}} \
-    --build-arg IMAGE_TERRAFORM_VERSION=${terraform_version} \
-    --build-arg IMAGE_TFLINT_VERSION=${tflint_version} \
-    --build-arg IMAGE_TERRAGRUNT_VERSION=${terragrunt_version}
+    --build-arg IMAGE_PYTHON_VERSION={{python-version}}
   else
     echo Ignoring cache
-    time sudo docker build . -t ${image_name_and_tag} --progress=plain --no-cache
-    --build-arg IMAGE_PYTHON_VERSION={{python-version}} \
-    --build-arg IMAGE_TERRAFORM_VERSION=${terraform_version} \
-    --build-arg IMAGE_TFLINT_VERSION=${tflint_version} \
-    --build-arg IMAGE_TERRAGRUNT_VERSION=${terragrunt_version}
+    time sudo docker build . -t ${image_name_and_tag} --progress=plain --no-cache \
+    --build-arg IMAGE_PYTHON_VERSION={{python-version}}
   fi
   echo ---------------------------------------
   echo Testing container
@@ -87,6 +61,11 @@ connect-to-image python-version:
   temp_volume_name=temp-volume-for-check-container-{{python-version}}
   sudo docker container run --rm -it --mount type=volume,source=${temp_volume_name},target=/workspace ${image_name_and_tag} bin/zsh
 
+
+set allow-duplicate-recipes := true
+set allow-duplicate-valiables := true
+
+import "./home/.local/share/just/dc/.justfile"
 
 # @todo
 

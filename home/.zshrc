@@ -59,6 +59,7 @@ fi
 
 # Aliases.
 alias j=just
+alias dc='just --justfile "${HOME}/.local/share/just/dc/.justfile"'
 alias docker="sudo docker"
 
 # Run any extra scripts.
