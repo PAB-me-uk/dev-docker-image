@@ -1,6 +1,7 @@
 ARG IMAGE_PYTHON_VERSION=3.12
 # Arguments added above the FROM line are not available after the FROM line unless redefined after
 FROM python:${IMAGE_PYTHON_VERSION}
+ARG IMAGE_PYTHON_VERSION=3.12
 ARG IMAGE_BIOME_VERSION=1.9.3
 ARG IMAGE_DART_SASS_VERSION=1.79.5
 ARG IMAGE_GITHUB_CLI_VERSION=2.58.0
@@ -90,6 +91,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && rm session-manager-plugin.deb \
   # Install cfn-nag
   && gem install cfn-nag \
+  # Install Azure CLI
+  && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
   # Install steampipe
   && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
   && tar -xvf steampipe_linux_amd64.tar.gz \

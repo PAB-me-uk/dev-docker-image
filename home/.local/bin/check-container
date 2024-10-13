@@ -286,6 +286,10 @@ class Tests(unittest.TestCase):
         self.assertEqual("/usr/bin/shellcheck", shutil.which("shellcheck"))
         self.zsh_can_access("shellcheck --version")
 
+    def test_azure_cli(self):
+        self.assertEqual("/usr/bin/az", shutil.which("az"))
+        self.zsh_can_access("az --version")
+
 
 if __name__ == "__main__":
     unittest.main(buffer=False)

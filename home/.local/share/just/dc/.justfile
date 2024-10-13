@@ -24,13 +24,6 @@ create-temp-dir: remove-temp-dir
 remove-temp-dir:
   rm -rf {{temp-dir}}
 
-# install-just version: create-temp-dir && remove-temp-dir
-#   #! /bin/bash
-#   set -eox pipefail
-#   cd {{temp-dir}}
-#   wget -qO just.tar.gz https://github.com/casey/just/releases/download/{{version}}/just-{{version}}-x86_64-unknown-linux-musl.tar.gz
-#   sudo tar -xvf --overwrite just.tar.gz -C /usr/local/bin just
-
 # Install Terragrunt
 install-terragrunt version:
   #! /bin/bash
@@ -71,7 +64,7 @@ install-go version: create-temp-dir && remove-temp-dir
   . ~/.zshrc
   go version
 
-
+# Install Biome
 install-biome version:
   #! /bin/bash
   set -eox pipefail
