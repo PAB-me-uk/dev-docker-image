@@ -1,10 +1,12 @@
 ARG IMAGE_PYTHON_VERSION=3.12
 # Arguments added above the FROM line are not available after the FROM line unless redefined after
 FROM python:${IMAGE_PYTHON_VERSION}
-ARG IMAGE_PYTHON_VERSION=3.12
+ARG IMAGE_BIOME_VERSION=1.9.3
+ARG IMAGE_DART_SASS_VERSION=1.79.5
+ARG IMAGE_GITHUB_CLI_VERSION=2.58.0
 ARG IMAGE_TERRAFORM_VERSION=1.5.7
-ARG IMAGE_TFLINT_VERSION=0.53.0
 ARG IMAGE_TERRAGRUNT_VERSION=0.66.9
+ARG IMAGE_TFLINT_VERSION=0.53.0
 ARG TIMEZONE=Europe/London
 ARG USER_NAME=dev
 ARG GROUP_NAME=${USER_NAME}
@@ -35,6 +37,7 @@ ENV IMAGE_JUST_VERSION=1.23.0
 
 COPY dependencies/* ${DEPENDENCIES_DIR}/
 COPY bin/* /usr/local/bin/
+COPY home/.local/share/just/dc/.justfile /tmp
 
 SHELL ["/bin/bash", "-c"]
 
@@ -55,24 +58,20 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 RUN export DEBIAN_FRONTEND=noninteractive \
   && cd /tmp \
-  # Install Terraform
-  && echo IMAGE_TERRAFORM_VERSION=${IMAGE_TERRAFORM_VERSION} \
-  && wget -q https://releases.hashicorp.com/terraform/${IMAGE_TERRAFORM_VERSION}/terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
-  && unzip -q terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
-  && rm terraform_${IMAGE_TERRAFORM_VERSION}_linux_amd64.zip \
-  && mv terraform /usr/bin/ \
-  # Install TFlint
-  && echo IMAGE_TFLINT_VERSION=${IMAGE_TFLINT_VERSION} \
-  && export TFLINT_VERSION=v${IMAGE_TFLINT_VERSION} \
-  && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/v${IMAGE_TFLINT_VERSION}/install_linux.sh | /bin/bash -x \
-  && tflint --version \
-  && tflint --version | grep "TFLint version ${IMAGE_TFLINT_VERSION}" \
-  # # Install TFsec
+  # Install Just
+  && wget -qO just.tar.gz https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
+  && tar -xvf just.tar.gz -C /usr/local/bin just \
+  && rm just.tar.gz \
+  # Install specific versions using just file (copied to /tmp earlier)
+  && just install-biome ${IMAGE_BIOME_VERSION} \
+  && just install-terraform ${IMAGE_TERRAFORM_VERSION} \
+  && just install-terragrunt ${IMAGE_TERRAGRUNT_VERSION} \
+  && just install-tflint ${IMAGE_TFLINT_VERSION} \
+  && just install-dart-sass ${IMAGE_DART_SASS_VERSION} \
+  && just install-github-cli ${IMAGE_GITHUB_CLI_VERSION} \
+  # Install latest version of tools
+  # Install TFsec
   && curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | /bin/bash \
-  # Install Terragrunt
-  && wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${IMAGE_TERRAGRUNT_VERSION}/terragrunt_linux_amd64 \
-  && mv terragrunt_linux_amd64 /usr/local/bin/terragrunt \
-  && chmod +x /usr/local/bin/terragrunt \
   # Install AWS CLI
   && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
   && unzip -q awscli-exe-linux-x86_64.zip \
@@ -89,32 +88,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
   && dpkg -i session-manager-plugin.deb \
   && rm session-manager-plugin.deb \
-  # Install GitHub CLI
-  && wget -q https://github.com/cli/cli/releases/download/v2.22.1/gh_2.22.1_linux_amd64.deb \
-  && dpkg -i gh_2.22.1_linux_amd64.deb \
-  && rm gh_2.22.1_linux_amd64.deb \
   # Install cfn-nag
   && gem install cfn-nag \
-  # Install Dart Sass
-  && wget -q https://github.com/sass/dart-sass/releases/download/1.58.0/dart-sass-1.58.0-linux-x64.tar.gz \
-  && tar -xvf dart-sass-1.58.0-linux-x64.tar.gz \
-  && rm dart-sass-1.58.0-linux-x64.tar.gz \
-  && mv dart-sass/sass /usr/local/bin/ \
-  && mv dart-sass/src /usr/local/bin/ \
-  && rm -rf dart-sass \
   # Install steampipe
   && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
   && tar -xvf steampipe_linux_amd64.tar.gz \
   && rm steampipe_linux_amd64.tar.gz \
   && mv steampipe /usr/local/bin/ \
-  # Install Biome
-  && wget -q https://github.com/biomejs/biome/releases/download/cli%2Fv1.8.2/biome-linux-x64 \
-  && mv biome-linux-x64 /usr/local/bin/biome \
-  && chmod +x /usr/local/bin/biome \
-  # Install Just
-  && wget -q https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
-  && tar -xvf just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz -C /usr/local/bin just \
-  && rm just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
   # Create user and group, allow sudo
   && groupadd --gid ${USER_GID} ${GROUP_NAME} \
   && adduser --gid ${USER_GID} --uid ${USER_UID} --home ${USER_HOME} --disabled-password --gecos "" ${USER_NAME} \

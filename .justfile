@@ -63,7 +63,7 @@ connect-to-image python-version:
 
 
 set allow-duplicate-recipes := true
-set allow-duplicate-valiables := true
+# set allow-duplicate-valiables := true
 
 import "./home/.local/share/just/dc/.justfile"
 
