@@ -42,7 +42,7 @@ PROMPT="%K{235}${DIVIDER}%F{cyan}%T${DIVIDER}path${COLON}%~${DIVIDER}aws${COLON}
 tsp /usr/local/bin/install-vscode-extensions.sh > /dev/null
 
 # Configure path.
-export PATH="/home/dev/.local/bin/:$PATH"
+export PATH="/home/dev/.local/bin:$PATH"
 
 # Copy Python to workspace if required.
 . python-to-workspace
