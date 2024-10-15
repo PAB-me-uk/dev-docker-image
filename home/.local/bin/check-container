@@ -50,6 +50,7 @@ class Tests(unittest.TestCase):
         return output
 
     def zsh_can_access(self, command):
+        command = f"source /home/dev/.zshrc && {command}"
         return self.shell_can_access(shell="/bin/zsh", command=command, environment=os.environ)
 
     def bash_can_access(self, command):
@@ -289,6 +290,14 @@ class Tests(unittest.TestCase):
     def test_azure_cli(self):
         self.assertEqual("/usr/bin/az", shutil.which("az"))
         self.zsh_can_access("az --version")
+
+    def test_databricks_cli(self):
+        self.assertEqual("/usr/local/bin/databricks", shutil.which("databricks"))
+        self.zsh_can_access("databricks --version")
+
+    def test_pdm(self):
+        self.assertEqual("/home/dev/.local/bin/pdm", shutil.which("pdm"))
+        self.zsh_can_access("pdm --version")
 
 
 if __name__ == "__main__":

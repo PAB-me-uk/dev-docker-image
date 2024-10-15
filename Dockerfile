@@ -93,6 +93,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && gem install cfn-nag \
   # Install Azure CLI
   && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
+  # Install Databricks CLI
+  && curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh \
   # Install steampipe
   && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
   && tar -xvf steampipe_linux_amd64.tar.gz \
@@ -133,6 +135,7 @@ SHELL ["/bin/zsh", "-c"]
 #   Install python pipx depedancies
 #   Install steampip plugins
 #   Install nvm
+#   Install pdm
 #   Install zsh autosuggestions
 RUN su - ${USER_NAME} -c "\
   export PATH=\"${USER_HOME}/.local/bin/:${PATH}\" \
@@ -147,6 +150,9 @@ RUN su - ${USER_NAME} -c "\
   && nvm alias default node \
   && nvm cache clear \
   && rm install.sh \
+  && wget -q https://pdm-project.org/install-pdm.py \
+  && python install-pdm.py \
+  && rm install-pdm.py \
   && mkdir -p ~/.zsh \
   && git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions \
   && mkdir -p ~/.just/zsh-autocomplete \
