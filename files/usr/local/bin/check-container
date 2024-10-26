@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+# For backward compatability only, instead use `dc check-container` directly
+dc check-container

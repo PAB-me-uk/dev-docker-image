@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-settings_file=/home/dev/.vscode-server/data/Machine/settings.json
-tmp=$(mktemp)
-jq '."python.formatting.provider" = "autopep8"' ${settings_file} > "${tmp}" && mv "${tmp}" ${settings_file}
-grep "python\.formatting\.provider" ${settings_file}

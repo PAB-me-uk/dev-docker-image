@@ -37,12 +37,12 @@ build-image python-version no-cache="":
   fi
   echo ---------------------------------------
   echo Testing container
-  sudo docker container run --rm -it --mount type=volume,source=${temp_volume_name},target=/workspace ${image_name_and_tag} bin/zsh -c "source ~/.zshrc && check-container"
+  sudo docker container run --rm -it --mount type=volume,source=${temp_volume_name},target=/workspace ${image_name_and_tag} bin/zsh -c "source ~/.zshrc && dc check-container"
   sudo docker volume rm -f ${temp_volume_name} 2> /dev/null 1> /dev/null || true
   echo Image ${image_name_and_tag} built successfully
 
 # Build all images.
-build-images no-cache="": (build-image "3.8" no-cache) (build-image "3.9" no-cache) (build-image "3.10" no-cache) (build-image "3.11" no-cache) (build-image "3.12" no-cache) (build-image "3.13" no-cache)
+build-images no-cache="": (build-image "3.9" no-cache) (build-image "3.10" no-cache) (build-image "3.11" no-cache) (build-image "3.12" no-cache) (build-image "3.13" no-cache)
 
 build-and-upload-image python-version no-cache="":
   sudo docker login
@@ -52,7 +52,7 @@ build-and-upload-image python-version no-cache="":
   sudo docker push "{{image_name}}:{{python-version}}"
   echo Image "{{image_name}}:{{python-version}}" uploaded successfully
 
-build-and-upload-images no-cache="": (build-and-upload-image "3.8" no-cache) (build-and-upload-image "3.9" no-cache) (build-and-upload-image "3.10" no-cache) (build-and-upload-image "3.11" no-cache) (build-and-upload-image "3.12" no-cache) (build-and-upload-image "3.13" no-cache)
+build-and-upload-images no-cache="": (build-and-upload-image "3.9" no-cache) (build-and-upload-image "3.10" no-cache) (build-and-upload-image "3.11" no-cache) (build-and-upload-image "3.12" no-cache) (build-and-upload-image "3.13" no-cache)
 
 connect-to-image python-version:
   #!/usr/bin/env bash
@@ -61,32 +61,7 @@ connect-to-image python-version:
   temp_volume_name=temp-volume-for-check-container-{{python-version}}
   sudo docker container run --rm -it --mount type=volume,source=${temp_volume_name},target=/workspace ${image_name_and_tag} bin/zsh
 
-
 set allow-duplicate-recipes := true
 # set allow-duplicate-valiables := true
 
-import "./home/.local/share/just/dc/.justfile"
-
-# @todo
-
-# ./home/.local/bin/create-dev-container
-# ./home/.local/bin/check-container
-
-# ./connect-to-container.sh
-# ./connect-to-docker-host.sh
-# ./customise/create-custom-dev-container.sh
-# ./home/.local/bin/black-off
-# ./home/.local/bin/black-on
-
-# Done
-
-# ./build-image.sh
-# ./build-all-images.sh
-# ./build-and-upload-image.sh
-# ./build-and-upload-all-images.sh
-
-# Skip?
-
-# ./bin/install-apt-packages.sh
-# ./bin/install-python-packages.sh
-# ./bin/install-vscode-extensions.sh
+import "./files/usr/local/share/dev-container/.justfile"

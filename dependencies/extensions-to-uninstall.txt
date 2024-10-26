@@ -1,8 +1,0 @@
-# Place Visual Studio Code extension below, one per line.
-
-rome.rome
-dbaeumer.vscode-eslint
-ms-python.autopep8
-ms-python.isort
-
-# Hint: type `code --list-extensions` in a terminal to get list.

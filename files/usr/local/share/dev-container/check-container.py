@@ -86,7 +86,6 @@ class Tests(unittest.TestCase):
 
     def test__environmental_variables(self):
         envars = [
-            "IMAGE_CUSTOMISE_DIR",
             "IMAGE_GROUP_NAME",
             "IMAGE_PYTHON_VERSION",
             "IMAGE_USER_GID",
@@ -192,7 +191,7 @@ class Tests(unittest.TestCase):
         self.zsh_can_access("cfn-lint --version")
 
     def test_cfn_square(self):
-        if self.python_version in ["3.8", "3.9"]:
+        if self.python_version in ["3.9"]:
             self.assertEqual("/home/dev/.local/bin/cf", shutil.which("cf"))
             self.zsh_can_access("cf --version")
 
@@ -298,6 +297,10 @@ class Tests(unittest.TestCase):
     def test_pdm(self):
         self.assertEqual("/home/dev/.local/bin/pdm", shutil.which("pdm"))
         self.zsh_can_access("pdm --version")
+
+    def test_dc(self):
+        self.assertEqual("/usr/local/bin/dc", shutil.which("dc"))
+        self.zsh_can_access("dc")
 
 
 if __name__ == "__main__":

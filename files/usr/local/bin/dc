@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+/usr/local/bin/just --justfile /usr/local/share/dev-container/.justfile "${@}"

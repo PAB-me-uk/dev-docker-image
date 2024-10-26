@@ -128,7 +128,7 @@ touch .gitconfig
 docker run --rm -it --env HOST_USER_HOME=$HOME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.12 /bin/zsh -c "/home/dev/.local/bin/create-dev-container initial-container initial-volume 3.12 .zsh-extra"
 ```
 
-The initial container and any custom containers (see below) will make use of this HOST_USER_NAME variable to mount the key files folders from the correct location.
+The initial container will make use of this HOST_USER_NAME variable to mount the key files folders from the correct location.
 
 ## Connect to container
 
@@ -183,50 +183,4 @@ docker cp container-name:/home/dev/this.txt /wherever/
 
 Create files containing your aliases (and any other zsh customisation) in `~/.zsh-extra` any files found will be picked up when you next open a terminal.
 
-### Further customisation of image
-
-You can create a customised version by following the steps below, this example uses Visual Studio Code, but this is not a requirement.
-
-Note: When producing a custom image you should use a container that is based on the very latest image available from DockerHub, if in doubt simply create a new dev container which will pull the latest image and use this during the customisation steps below.
-
-From within an existing dev container:
-
-```bash
-code ~/customise
-```
-
-This will open a new window to the same container pointing to the customisation files with the structure below:
-
-```
-/home/dev/customise
-├── Dockerfile
-├── create-custom-dev-container.sh
-├── dependencies
-│   ├── extensions.txt
-│   ├── packages.txt
-│   ├── pipx.txt
-│   └── requirements.txt
-└── home
-```
-
-Update files within the `/home/dev/customise` directory as below:
-
-| File                           | Usage                                                                                                                                                                                           |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| /dependencies/packages.txt     | Add any additional APT packages here.                                                                                                                                                           |
-| /dependencies/requirements.txt | Add any additional Python PIP packages here.                                                                                                                                                    |
-| /dependencies/pipx.txt         | Add any additional Python PIPX packages (stand alone Python utilities) here.                                                                                                                    |
-| /dependencies/extensions.txt   | Add any additional Visual Studio Code extensions here, use command `code --list-extensions` from outside container to get correct name for an extension.                                        |
-| /home (directory)              | Any files and folders placed in `/home` will be recursively copied to `/home/dev/` in the new custom container. You can use this to override any of the existing files from the original image. |
-| /Dockerfile                    | Optionally add you own custom steps here as per [the documentation](https://docs.docker.com/engine/reference/builder/).                                                                         |
-
-Run the command below to create a new custom dev container:
-
-```bash
-cd ~/customise
-./create-custom-dev-container.sh custom-container-name volume-name 3.12
-```
-
-_Replace `3.12` above with desired Python version_
-
-Note: You may wish to backup or version control your changes to the customisation files, as a minimum it is worth copying them to a volume e.g. `/workspace/`
+To persist `~/.zsh-extra` create the files on the host (in WSL if Windows) and add `.zsh-extra` to the very end of any `dc create-dev-container` command you execute to map this directory from the host e.g. `dc create-dev-container container-name volume-name 3.12 .zsh-extra`

@@ -1,2 +1,0 @@
-# Place Python dependencies below, one per line.
-# No fixed versions please as not compatable with all python versions, see pipx.txt for python utilities.

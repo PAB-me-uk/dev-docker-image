@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+# For backward compatability only, instead use `dc create-dev-container` directly
+dc create-dev-container
