@@ -34,6 +34,10 @@ ENV IMAGE_TFLINT_VERSION=${IMAGE_TFLINT_VERSION}
 ENV IMAGE_TERRAGRUNT_VERSION=${IMAGE_TERRAGRUNT_VERSION}
 ENV IMAGE_JUST_VERSION=1.23.0
 
+ENV LANG en_GB.UTF-8
+ENV LANGUAGE en_GB:en
+ENV LC_ALL en_GB.UTF-8
+
 COPY ./files/usr/. /usr/
 
 SHELL ["/bin/bash", "-c"]
@@ -59,6 +63,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   lastpass-cli \
   less \
   linkchecker \
+  locales \
   man \
   nano \
   net-tools \
@@ -70,17 +75,16 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   tree \
   vim \
   zsh \
+  # Set locale
+  && sed -i '/en_GB.UTF-8/s/^# //g' /etc/locale.gen \
+  && locale-gen \
+  && locale \
   # Install Docker
   && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list \
   && apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y docker-ce-cli docker-compose-plugin ruby-dev \
-  # Tidy up after apt commands
-  && apt autoremove -y \
-  && apt-get clean \
-  RUN export DEBIAN_FRONTEND=noninteractive \
-  && cd /tmp \
   # Install Just
   && wget -qO just.tar.gz https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
   && tar -xvf just.tar.gz -C /usr/local/bin just \
@@ -145,7 +149,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   # Configure ~/.aws
   && mkdir ${USER_HOME}/.aws \
   && chown ${USER_UID}:${USER_GID} ${USER_HOME}/.aws \
-  && chmod 0700 ${USER_HOME}/.aws
+  && chmod 0700 ${USER_HOME}/.aws \
+  # Tidy up after apt commands
+  && apt autoremove -y \
+  && apt-get clean \
+  && cd /tmp
+
 
 # Copy files to user home, including subdirectories
 COPY --chown=${USER_UID} ./files/home/dev/. ${USER_HOME}/
@@ -203,9 +212,11 @@ RUN su - ${USER_NAME} -c "\
   && rm -rf /home/dev/.cache/pip \
   "
 
+# Install CFN Square which we allow to fail as not supported in Python > 3.9
 RUN su - ${USER_NAME} -c "\
   source ${IMAGE_WORKSPACE_DIR}/.python/${IMAGE_PYTHON_VERSION}/bin/activate \
-  && pipx install cfn-square || true \
+  && pipx install cfn-square \
+  || echo We expect install of cfn-square to fail in unsupported Python versions \
   "
 
 RUN sed -i "s|\${env:IMAGE_PYTHON_VERSION}|${IMAGE_PYTHON_VERSION}|g" ${USER_HOME}/.vscode-server/data/Machine/settings.json \

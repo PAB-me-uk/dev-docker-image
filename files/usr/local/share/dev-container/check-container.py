@@ -302,6 +302,39 @@ class Tests(unittest.TestCase):
         self.assertEqual("/usr/local/bin/dc", shutil.which("dc"))
         self.zsh_can_access("dc")
 
+    def test_bandit(self):
+        self.assertEqual(
+            f"/workspace/.python/{self.python_version}/bin/bandit", shutil.which("bandit")
+        )
+        self.zsh_can_access("bandit --version")
+
+    def test_zsh_output(self):
+        test_line = "just this line"
+        self.assertEqual(f"{test_line}\n", self.zsh_can_access(f"echo {test_line}"))
+
+    def test_locale(self):
+        expected = "\n".join(
+            [
+                "LANG=en_GB.UTF-8",
+                "LANGUAGE=en_GB:en",
+                'LC_CTYPE="en_GB.UTF-8"',
+                'LC_NUMERIC="en_GB.UTF-8"',
+                'LC_TIME="en_GB.UTF-8"',
+                'LC_COLLATE="en_GB.UTF-8"',
+                'LC_MONETARY="en_GB.UTF-8"',
+                'LC_MESSAGES="en_GB.UTF-8"',
+                'LC_PAPER="en_GB.UTF-8"',
+                'LC_NAME="en_GB.UTF-8"',
+                'LC_ADDRESS="en_GB.UTF-8"',
+                'LC_TELEPHONE="en_GB.UTF-8"',
+                'LC_MEASUREMENT="en_GB.UTF-8"',
+                'LC_IDENTIFICATION="en_GB.UTF-8"',
+                "LC_ALL=en_GB.UTF-8",
+                "",
+            ]
+        )
+        self.assertEqual(expected, self.zsh_can_access("locale"))
+
 
 if __name__ == "__main__":
     unittest.main(buffer=False)

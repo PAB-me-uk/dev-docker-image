@@ -98,28 +98,28 @@ create-dev-container container-name volume-name python-version *other-home-direc
     home_mount_arguments+=" --mount type=bind,source=${HOST_USER_HOME}/${mount},target=/home/dev/${mount}"
   done
 
-  echo Deleting any existing container with name: $1
-  sudo docker container rm -f $1 2> /dev/null 1> /dev/null || true
+  echo Deleting any existing container with name: {{container-name}}
+  sudo docker container rm -f {{container-name}} 2> /dev/null 1> /dev/null || true
   mkdir -p ~/.ssh
   mkdir -p ~/.aws
 
   if [[ -z "${NO_PULL}" ]]; then
     echo Getting latest image
-    sudo docker pull pabuk/dev-python:$3
+    sudo docker pull pabuk/dev-python:{{python-version}}
   fi
 
-  echo Creating container with name: $1
+  echo Creating container with name: {{container-name}}
 
   command="docker container run -d
-    --name $1 \
-    --mount type=volume,source=$2,target=${IMAGE_WORKSPACE_DIR} \
+    --name {{container-name}} \
+    --mount type=volume,source={{volume-name}},target=${IMAGE_WORKSPACE_DIR} \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     ${home_mount_arguments} \
     --env HOST_USER_HOME=${HOST_USER_HOME} \
-    pabuk/dev-python:$3"
+    pabuk/dev-python:{{python-version}}"
   echo Command: $command
   eval sudo $command
-  echo Container created with name: $1
+  echo Container created with name: {{container-name}}
 
   # Backwards compatability:
 
@@ -134,7 +134,7 @@ create-dev-container container-name volume-name python-version *other-home-direc
 
   # If .zsh-extra is not in home_mounts, and if the .zsh-extra directory exists, copy it to the new container
   if [[ $found -eq 0 ]] && [[ -d ${HOME}/.zsh-extra ]]; then
-    sudo docker cp ${HOME}/.zsh-extra $1:${HOME}/
+    sudo docker cp ${HOME}/.zsh-extra {{container-name}}:${HOME}/
     echo Copied ${HOME}/.zsh-extra to new container
   fi
 
