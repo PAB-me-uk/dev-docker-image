@@ -131,7 +131,7 @@ From the **WSL terminal** run the following commands:
 ```
 mkdir -p ~/.aws ~/.ssh ~/.zsh-extra
 touch .gitconfig
-docker run --rm -it --pull=always --env HOST_USER_HOME=$HOME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:3.12 /bin/zsh -c "dc create-dev-container initial-container initial-volume 3.12 .zsh-extra"
+python_version=3.12; docker run --rm -it --pull=always --env HOST_USER_HOME=$HOME --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock pabuk/dev-python:${python_version} /bin/zsh -c "dc create-dev-container initial-container initial-volume ${python_version} .zsh-extra"
 ```
 
 The initial container will make use of this HOST_USER_NAME variable to mount the key files folders from the correct location.
