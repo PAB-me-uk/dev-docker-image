@@ -13,7 +13,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: docker.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: pabuk/dev-python
+  IMAGE_NAME: pabuk/dev-python-testing
 
 jobs:
   build-and-test:

@@ -9,7 +9,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: docker.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: pabuk/dev-python-arm64
+  IMAGE_NAME: pabuk/dev-python-testing
 
 jobs:
   build-and-test:
@@ -32,4 +32,4 @@ jobs:
       - name: Test the Docker image
         run: docker run --rm -t ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }} bin/zsh -c "source ~/.zshrc && check-container"
       - name: Push the Docker image
-        run: docker push --platform linux/arm64 ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}
+        run: docker push ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}
