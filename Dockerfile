@@ -44,8 +44,8 @@ SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
   && export ARCH=$(uname -m) \
-  && if [[ "${ARCH}" -eq "x86_64" ]]; then export ARCH_ALT_NAME=amd64 ; else export ARCH_ALT_NAME=arm64; fi \
-  && if [[ "${ARCH}" -eq "x86_64" ]]; then export ARCH_ALT_NAME_SM=64bit ; else export ARCH_ALT_NAME_SM=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME=amd64; else export ARCH_ALT_NAME=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_SM=64bit; else export ARCH_ALT_NAME_SM=arm64; fi \
   && echo "Architecture: ARCH=${ARCH}, ARCH_ALT_NAME=${ARCH_ALT_NAME}, ARCH_ALT_NAME_SM=${ARCH_ALT_NAME_SM}" \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
