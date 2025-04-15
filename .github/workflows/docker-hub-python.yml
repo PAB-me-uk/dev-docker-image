@@ -17,7 +17,7 @@ env:
 
 jobs:
   build-and-test:
-    if: github.repository == 'PAB-me-uk/dev-docker-imageDISABLED'
+    if: github.repository == 'PAB-me-uk/dev-docker-image'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,20 +37,3 @@ jobs:
         run: docker run --rm -t ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }} bin/zsh -c "source ~/.zshrc && check-container"
       - name: Push the Docker image
         run: docker push ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}
-  build-and-test-macos:
-    if: github.repository == 'PAB-me-uk/dev-docker-image'
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        PYTHON_VERSION:
-          - '3.13'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Docker Login
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-      - name: Build the Docker image
-        run: docker build . -t ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }} --no-cache --force-rm --build-arg IMAGE_PYTHON_VERSION=${{ matrix.PYTHON_VERSION }}
-      - name: Test the Docker image
-        run: docker run --rm -t ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }} bin/zsh -c "source ~/.zshrc && check-container"
-      # - name: Push the Docker image
-      #   run: docker push ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}
