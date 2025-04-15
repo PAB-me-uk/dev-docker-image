@@ -178,7 +178,6 @@ install-vscode-extensions:
   code --install-extension bibhasdn.unique-lines
   code --install-extension biomejs.biome
   code --install-extension charliermarsh.ruff
-  code --install-extension eastman.vscode-cfn-nag
   code --install-extension esbenp.prettier-vscode
   code --install-extension hashicorp.terraform
   code --install-extension hashicorp.hcl

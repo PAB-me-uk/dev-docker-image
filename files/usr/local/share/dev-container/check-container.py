@@ -195,10 +195,6 @@ class Tests(unittest.TestCase):
             self.assertEqual("/home/dev/.local/bin/cf", shutil.which("cf"))
             self.zsh_can_access("cf --version")
 
-    def test_cfn_nag(self):
-        self.assertEqual("/usr/local/bin/cfn_nag", shutil.which("cfn_nag"))
-        self.all_shells_can_access("cfn_nag --version")
-
     def test_poetry(self):
         self.assertEqual("/home/dev/.local/bin/poetry", shutil.which("poetry"))
         self.zsh_can_access("poetry --version")

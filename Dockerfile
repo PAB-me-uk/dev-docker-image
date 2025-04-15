@@ -68,7 +68,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   nano \
   net-tools \
   p7zip-full \
-  ruby \
   shellcheck \
   sudo \
   task-spooler \
@@ -115,8 +114,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
   && dpkg -i session-manager-plugin.deb \
   && rm session-manager-plugin.deb \
-  # Install cfn-nag
-  && gem install cfn-nag \
   # Install Azure CLI
   && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
   # Install Databricks CLI
