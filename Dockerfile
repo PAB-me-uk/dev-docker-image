@@ -44,9 +44,9 @@ SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
   && export ARCH=$(uname -m) \
-  && export ARCH_ALT_NAME=arm64 \
-  && if [[ "${ARCH}" -eq "" ]]; then export ARCH_ALT_NAME=arm64 ; else export ARCH_ALT_NAME=arm64; fi \
-  && echo "Architecture: ${ARCH}, ${ARCH_ALT_NAME}" \
+  && if [[ "${ARCH}" -eq "x86_64" ]]; then export ARCH_ALT_NAME=amd64 ; else export ARCH_ALT_NAME=arm64; fi \
+  && if [[ "${ARCH}" -eq "x86_64" ]]; then export ARCH_ALT_NAME_SM=64bit ; else export ARCH_ALT_NAME_SM=arm64; fi \
+  && echo "Architecture: ARCH=${ARCH}, ARCH_ALT_NAME=${ARCH_ALT_NAME}, ARCH_ALT_NAME_SM=${ARCH_ALT_NAME_SM}" \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
@@ -114,7 +114,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && /bin/bash ./sam-installation/install \
   && rm -rf ./sam-installation \
   # Install Session Manager Plugin
-  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
+  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH_ALT_NAME_SM}/session-manager-plugin.deb \
   && dpkg -i session-manager-plugin.deb \
   && rm session-manager-plugin.deb \
   # Install Azure CLI
