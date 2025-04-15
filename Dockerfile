@@ -43,6 +43,7 @@ COPY ./files/usr/. /usr/
 SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
+  && env \
   && export ARCH=$(uname -m) \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
