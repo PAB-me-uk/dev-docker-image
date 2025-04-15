@@ -45,8 +45,9 @@ SHELL ["/bin/bash", "-c"]
 RUN export DEBIAN_FRONTEND=noninteractive \
   && export ARCH=$(uname -m) \
   && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME=amd64; else export ARCH_ALT_NAME=arm64; fi \
-  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_SM=64bit; else export ARCH_ALT_NAME_SM=arm64; fi \
-  && echo "Architecture: ARCH=${ARCH}, ARCH_ALT_NAME=${ARCH_ALT_NAME}, ARCH_ALT_NAME_SM=${ARCH_ALT_NAME_SM}" \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_A=64bit; else export ARCH_ALT_NAME_A=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_B=x86_64; else export ARCH_ALT_NAME_B=arm64; fi \
+  && echo "Architecture: ARCH=${ARCH}, ARCH_ALT_NAME=${ARCH_ALT_NAME}, ARCH_ALT_NAME_A=${ARCH_ALT_NAME_A}, ARCH_ALT_NAME_B=${ARCH_ALT_NAME_B}" \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
@@ -109,14 +110,15 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && rm -rf ./aws \
   && echo 1111111111111111111111111111111111111111111111 \
   # Install AWS SAM CLI
-  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-${ARCH}.zip \
-  && unzip -q aws-sam-cli-linux-${ARCH}.zip -d sam-installation \
-  && rm aws-sam-cli-linux-${ARCH}.zip \
+
+  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-${ARCH_ALT_NAME_B}.zip \
+  && unzip -q aws-sam-cli-linux-${ARCH_ALT_NAME_B}.zip -d sam-installation \
+  && rm aws-sam-cli-linux-${ARCH_ALT_NAME_B}.zip \
   && /bin/bash ./sam-installation/install \
   && rm -rf ./sam-installation \
   && echo 2222222222222222222222222222222222222222222222 \
   # Install Session Manager Plugin
-  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH_ALT_NAME_SM}/session-manager-plugin.deb \
+  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH_ALT_NAME_A}/session-manager-plugin.deb \
   && dpkg -i session-manager-plugin.deb \
   && rm session-manager-plugin.deb \
   && echo 3333333333333333333333333333333333333333333333 \
