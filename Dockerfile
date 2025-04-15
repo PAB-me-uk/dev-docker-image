@@ -119,9 +119,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   # Install Databricks CLI
   && curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh \
   # Install steampipe
-  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
-  && tar -xvf steampipe_linux_amd64.tar.gz \
-  && rm steampipe_linux_amd64.tar.gz \
+  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_${TARGETARCH}.tar.gz \
+  && tar -xvf steampipe_linux_${TARGETARCH}.tar.gz \
+  && rm steampipe_linux_${TARGETARCH}.tar.gz \
   && mv steampipe /usr/local/bin/ \
   # Create user and group, allow sudo
   && groupadd --gid ${USER_GID} ${GROUP_NAME} \
