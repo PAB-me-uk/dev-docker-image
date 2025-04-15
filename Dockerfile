@@ -44,10 +44,11 @@ SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
   && export ARCH=$(uname -m) \
-  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME=amd64; else export ARCH_ALT_NAME=arm64; fi \
-  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_A=64bit; else export ARCH_ALT_NAME_A=arm64; fi \
-  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_B=x86_64; else export ARCH_ALT_NAME_B=arm64; fi \
-  && echo "Architecture: ARCH=${ARCH}, ARCH_ALT_NAME=${ARCH_ALT_NAME}, ARCH_ALT_NAME_A=${ARCH_ALT_NAME_A}, ARCH_ALT_NAME_B=${ARCH_ALT_NAME_B}" \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_A=amd64; else export ARCH_ALT_NAME_A=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_B=64bit; else export ARCH_ALT_NAME_B=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_C=x86_64; else export ARCH_ALT_NAME_C=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_D=x64; else export ARCH_ALT_NAME_D=arm64; fi \
+  && echo "Architecture: ARCH=${ARCH}, ARCH_ALT_NAME_A=${ARCH_ALT_NAME_A}, ARCH_ALT_NAME_B=${ARCH_ALT_NAME_B}, ARCH_ALT_NAME_C=${ARCH_ALT_NAME_C}, ARCH_ALT_NAME_D=${ARCH_ALT_NAME_D}" \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
@@ -111,14 +112,14 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && echo 1111111111111111111111111111111111111111111111 \
   # Install AWS SAM CLI
 
-  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-${ARCH_ALT_NAME_B}.zip \
-  && unzip -q aws-sam-cli-linux-${ARCH_ALT_NAME_B}.zip -d sam-installation \
-  && rm aws-sam-cli-linux-${ARCH_ALT_NAME_B}.zip \
+  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip \
+  && unzip -q aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip -d sam-installation \
+  && rm aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip \
   && /bin/bash ./sam-installation/install \
   && rm -rf ./sam-installation \
   && echo 2222222222222222222222222222222222222222222222 \
   # Install Session Manager Plugin
-  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH_ALT_NAME_A}/session-manager-plugin.deb \
+  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH_ALT_NAME_B}/session-manager-plugin.deb \
   && dpkg -i session-manager-plugin.deb \
   && rm session-manager-plugin.deb \
   && echo 3333333333333333333333333333333333333333333333 \
@@ -128,9 +129,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   # Install Databricks CLI
   && curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh \
   # Install steampipe
-  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_${ARCH_ALT_NAME}.tar.gz \
-  && tar -xvf steampipe_linux_${ARCH_ALT_NAME}.tar.gz \
-  && rm steampipe_linux_${ARCH_ALT_NAME}.tar.gz \
+  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_${ARCH_ALT_NAME_A}.tar.gz \
+  && tar -xvf steampipe_linux_${ARCH_ALT_NAME_A}.tar.gz \
+  && rm steampipe_linux_${ARCH_ALT_NAME_A}.tar.gz \
   && mv steampipe /usr/local/bin/ \
   # Create user and group, allow sudo
   && groupadd --gid ${USER_GID} ${GROUP_NAME} \
