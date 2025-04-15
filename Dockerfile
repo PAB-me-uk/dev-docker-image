@@ -43,8 +43,10 @@ COPY ./files/usr/. /usr/
 SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
-  && env \
   && export ARCH=$(uname -m) \
+  && export ARCH_ALT_NAME=arm64 \
+  && if [[ "${ARCH}" -eq "" ]]; then export ARCH_ALT_NAME=arm64 ; else export ARCH_ALT_NAME=arm64; fi \
+  && echo "Architecture: ${ARCH}, ${ARCH_ALT_NAME}" \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
@@ -120,9 +122,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   # Install Databricks CLI
   && curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh \
   # Install steampipe
-  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_${TARGETARCH}.tar.gz \
-  && tar -xvf steampipe_linux_${TARGETARCH}.tar.gz \
-  && rm steampipe_linux_${TARGETARCH}.tar.gz \
+  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_${ARCH_ALT_NAME}.tar.gz \
+  && tar -xvf steampipe_linux_${ARCH_ALT_NAME}.tar.gz \
+  && rm steampipe_linux_${ARCH_ALT_NAME}.tar.gz \
   && mv steampipe /usr/local/bin/ \
   # Create user and group, allow sudo
   && groupadd --gid ${USER_GID} ${GROUP_NAME} \
