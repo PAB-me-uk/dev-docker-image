@@ -43,11 +43,11 @@ COPY ./files/usr/. /usr/
 SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
+  && export ARCH=$(uname -m) \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
   && apt-get purge -y imagemagick imagemagick-6-common \
-  && export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends apt-utils \
   && apt install -y \
@@ -85,7 +85,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get upgrade -y \
   && apt-get install -y docker-ce-cli docker-compose-plugin ruby-dev \
   # Install Just
-  && wget -qO just.tar.gz https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
+  && wget -qO just.tar.gz https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-${ARCH}-unknown-linux-musl.tar.gz \
   && tar -xvf just.tar.gz -C /usr/local/bin just \
   && rm just.tar.gz \
   # Install specific versions using just file (copied to /tmp earlier)
@@ -99,15 +99,15 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   # Install TFsec
   && curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | /bin/bash \
   # Install AWS CLI
-  && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
-  && unzip -q awscli-exe-linux-x86_64.zip \
-  && rm awscli-exe-linux-x86_64.zip \
+  && wget -q https://awscli.amazonaws.com/awscli-exe-linux-${ARCH}.zip \
+  && unzip -q awscli-exe-linux-${ARCH}.zip \
+  && rm awscli-exe-linux-${ARCH}.zip \
   && /bin/bash ./aws/install \
   && rm -rf ./aws \
   # Install AWS SAM CLI
-  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip \
-  && unzip -q aws-sam-cli-linux-x86_64.zip -d sam-installation \
-  && rm aws-sam-cli-linux-x86_64.zip \
+  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-${ARCH}.zip \
+  && unzip -q aws-sam-cli-linux-${ARCH}.zip -d sam-installation \
+  && rm aws-sam-cli-linux-${ARCH}.zip \
   && /bin/bash ./sam-installation/install \
   && rm -rf ./sam-installation \
   # Install Session Manager Plugin
