@@ -56,8 +56,8 @@ jobs:
       - name: Push the Docker image
         run: docker push ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}-arm64v8
   combine-manifests:
+    needs: ["build-and-test", "build-and-test-arm64"]
     if: github.repository == 'PAB-me-uk/dev-docker-image'
-    needs: [build-and-test, build-and-test-arm64]
       runs-on: ubuntu-latest
       strategy:
         matrix:
