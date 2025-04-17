@@ -28,7 +28,7 @@ remove-temp-dir:
 install-terragrunt version:
   #! /bin/bash
   set -eox pipefail
-  sudo wget -qO /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v{{version}}/terragrunt_linux_amd64
+  sudo wget -qO /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v{{version}}/terragrunt_linux_${ARCH_ALT_NAME_A}
   sudo chmod +x /usr/local/bin/terragrunt
   terragrunt --version
 
@@ -37,7 +37,7 @@ install-terraform version: create-temp-dir && remove-temp-dir
   #! /bin/bash
   set -eox pipefail
   cd {{temp-dir}}
-  wget -qO terraform.zip https://releases.hashicorp.com/terraform/{{version}}/terraform_{{version}}_linux_amd64.zip
+  wget -qO terraform.zip https://releases.hashicorp.com/terraform/{{version}}/terraform_{{version}}_linux_${ARCH_ALT_NAME_A}.zip
   unzip -qo terraform.zip
   sudo mv -f terraform /usr/bin/
   sudo chmod +x /usr/bin/terraform
@@ -55,7 +55,7 @@ install-go version: create-temp-dir && remove-temp-dir
   #! /bin/bash
   set -eox pipefail
   cd {{temp-dir}}
-  wget -qO go.tar.gz https://go.dev/dl/go{{version}}.linux-amd64.tar.gz
+  wget -qO go.tar.gz https://go.dev/dl/go{{version}}.linux-${ARCH_ALT_NAME_A}.tar.gz
   sudo rm -rf /usr/local/go
   sudo tar -C /usr/local -xzf go.tar.gz
   if ! grep -Fxq 'export PATH=$PATH:/usr/local/go/bin' ~/.zshrc; then
@@ -68,7 +68,7 @@ install-go version: create-temp-dir && remove-temp-dir
 install-biome version:
   #! /bin/bash
   set -eox pipefail
-  sudo wget -O /usr/local/bin/biome -q https://github.com/biomejs/biome/releases/download/cli%2Fv{{version}}/biome-linux-x64
+  sudo wget -O /usr/local/bin/biome -q https://github.com/biomejs/biome/releases/download/cli%2Fv{{version}}/biome-linux-${ARCH_ALT_NAME_D}
   sudo chmod +x /usr/local/bin/biome
 
 # Install GitHub CLI
@@ -76,12 +76,12 @@ install-github-cli version: create-temp-dir && remove-temp-dir
   #! /bin/bash
   set -eox pipefail
   cd {{temp-dir}}
-  wget -qO gh.deb https://github.com/cli/cli/releases/download/v{{version}}/gh_{{version}}_linux_amd64.deb
+  wget -qO gh.deb https://github.com/cli/cli/releases/download/v{{version}}/gh_{{version}}_linux_${ARCH_ALT_NAME_A}.deb
   dpkg -i gh.deb
 
 # Install Dart Sass
 install-dart-sass version: create-temp-dir && remove-temp-dir
-  wget -qO dart-sass.tar.gz https://github.com/sass/dart-sass/releases/download/{{version}}/dart-sass-{{version}}-linux-x64.tar.gz
+  wget -qO dart-sass.tar.gz https://github.com/sass/dart-sass/releases/download/{{version}}/dart-sass-{{version}}-linux-${ARCH_ALT_NAME_D}.tar.gz
   tar -xvf dart-sass.tar.gz
   mv dart-sass/sass /usr/local/bin/
   mv dart-sass/src /usr/local/bin/

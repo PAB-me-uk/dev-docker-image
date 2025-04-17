@@ -43,11 +43,16 @@ COPY ./files/usr/. /usr/
 SHELL ["/bin/bash", "-c"]
 
 RUN export DEBIAN_FRONTEND=noninteractive \
+  && export ARCH=$(uname -m) \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_A=amd64; else export ARCH_ALT_NAME_A=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_B=64bit; else export ARCH_ALT_NAME_B=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_C=x86_64; else export ARCH_ALT_NAME_C=arm64; fi \
+  && if [[ "${ARCH}" == "x86_64" ]]; then export ARCH_ALT_NAME_D=x64; else export ARCH_ALT_NAME_D=arm64; fi \
+  && echo "Architecture: ARCH=${ARCH}, ARCH_ALT_NAME_A=${ARCH_ALT_NAME_A}, ARCH_ALT_NAME_B=${ARCH_ALT_NAME_B}, ARCH_ALT_NAME_C=${ARCH_ALT_NAME_C}, ARCH_ALT_NAME_D=${ARCH_ALT_NAME_D}" \
   # Set timezone
   && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
   && apt-get purge -y imagemagick imagemagick-6-common \
-  && export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends apt-utils \
   && apt install -y \
@@ -85,7 +90,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get upgrade -y \
   && apt-get install -y docker-ce-cli docker-compose-plugin ruby-dev \
   # Install Just
-  && wget -qO just.tar.gz https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
+  && wget -qO just.tar.gz https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-${ARCH}-unknown-linux-musl.tar.gz \
   && tar -xvf just.tar.gz -C /usr/local/bin just \
   && rm just.tar.gz \
   # Install specific versions using just file (copied to /tmp earlier)
@@ -99,29 +104,34 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   # Install TFsec
   && curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | /bin/bash \
   # Install AWS CLI
-  && wget -q https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
-  && unzip -q awscli-exe-linux-x86_64.zip \
-  && rm awscli-exe-linux-x86_64.zip \
+  && wget -q https://awscli.amazonaws.com/awscli-exe-linux-${ARCH}.zip \
+  && unzip -q awscli-exe-linux-${ARCH}.zip \
+  && rm awscli-exe-linux-${ARCH}.zip \
   && /bin/bash ./aws/install \
   && rm -rf ./aws \
+  && echo 1111111111111111111111111111111111111111111111 \
   # Install AWS SAM CLI
-  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip \
-  && unzip -q aws-sam-cli-linux-x86_64.zip -d sam-installation \
-  && rm aws-sam-cli-linux-x86_64.zip \
+
+  && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip \
+  && unzip -q aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip -d sam-installation \
+  && rm aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip \
   && /bin/bash ./sam-installation/install \
   && rm -rf ./sam-installation \
+  && echo 2222222222222222222222222222222222222222222222 \
   # Install Session Manager Plugin
-  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb \
+  && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH_ALT_NAME_B}/session-manager-plugin.deb \
   && dpkg -i session-manager-plugin.deb \
   && rm session-manager-plugin.deb \
+  && echo 3333333333333333333333333333333333333333333333 \
   # Install Azure CLI
   && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
+  && echo 4444444444444444444444444444444444444444444444 \
   # Install Databricks CLI
   && curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh \
   # Install steampipe
-  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_amd64.tar.gz \
-  && tar -xvf steampipe_linux_amd64.tar.gz \
-  && rm steampipe_linux_amd64.tar.gz \
+  && wget -q https://github.com/turbot/steampipe/releases/latest/download/steampipe_linux_${ARCH_ALT_NAME_A}.tar.gz \
+  && tar -xvf steampipe_linux_${ARCH_ALT_NAME_A}.tar.gz \
+  && rm steampipe_linux_${ARCH_ALT_NAME_A}.tar.gz \
   && mv steampipe /usr/local/bin/ \
   # Create user and group, allow sudo
   && groupadd --gid ${USER_GID} ${GROUP_NAME} \
