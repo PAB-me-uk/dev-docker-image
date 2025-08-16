@@ -65,7 +65,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   graphviz \
   iputils-ping \
   jq \
-  lastpass-cli \
   less \
   linkchecker \
   locales \

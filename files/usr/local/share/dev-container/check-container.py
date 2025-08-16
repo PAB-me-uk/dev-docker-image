@@ -274,10 +274,6 @@ class Tests(unittest.TestCase):
         self.assertEqual("/usr/bin/dot", shutil.which("dot"))
         self.zsh_can_access("dot -V")
 
-    def test_lastpass_cli(self):
-        self.assertEqual("/usr/bin/lpass", shutil.which("lpass"))
-        self.zsh_can_access("lpass --version")
-
     def test_shell_check(self):
         self.assertEqual("/usr/bin/shellcheck", shutil.which("shellcheck"))
         self.zsh_can_access("shellcheck --version")
