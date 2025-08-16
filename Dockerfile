@@ -1,7 +1,7 @@
-ARG IMAGE_PYTHON_VERSION=3.12
+ARG IMAGE_PYTHON_VERSION=3.13
 # Arguments added above the FROM line are not available after the FROM line unless redefined after
 FROM python:${IMAGE_PYTHON_VERSION}
-ARG IMAGE_PYTHON_VERSION=3.12
+ARG IMAGE_PYTHON_VERSION=3.13
 ARG IMAGE_BIOME_VERSION=1.9.3
 ARG IMAGE_DART_SASS_VERSION=1.79.5
 ARG IMAGE_GITHUB_CLI_VERSION=2.58.0
@@ -61,7 +61,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   curl \
   default-mysql-client \
   dnsutils \
-  docker-compose \
   fzf \
   gnupg \
   graphviz \
@@ -90,7 +89,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && chmod a+r /etc/apt/keyrings/docker.asc \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   && apt-get update \
-  && apt-get install -y docker-buildx-plugin docker-compose-plugin ruby-dev \
+  && apt-get install -y docker-ce-cli docker-buildx-plugin docker-compose-plugin \
   # Install Just
   && wget -qO just.tar.gz https://github.com/casey/just/releases/download/${IMAGE_JUST_VERSION}/just-${IMAGE_JUST_VERSION}-${ARCH}-unknown-linux-musl.tar.gz \
   && tar -xvf just.tar.gz -C /usr/local/bin just \
