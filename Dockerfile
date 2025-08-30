@@ -110,7 +110,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && rm awscli-exe-linux-${ARCH}.zip \
   && /bin/bash ./aws/install \
   && rm -rf ./aws \
-  && echo 1111111111111111111111111111111111111111111111 \
   # Install AWS SAM CLI
 
   && wget -q https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip \
@@ -118,15 +117,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && rm aws-sam-cli-linux-${ARCH_ALT_NAME_C}.zip \
   && /bin/bash ./sam-installation/install \
   && rm -rf ./sam-installation \
-  && echo 2222222222222222222222222222222222222222222222 \
   # Install Session Manager Plugin
   && wget -q https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH_ALT_NAME_B}/session-manager-plugin.deb \
   && dpkg -i session-manager-plugin.deb \
   && rm session-manager-plugin.deb \
-  && echo 3333333333333333333333333333333333333333333333 \
   # Install Azure CLI
   && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
-  && echo 4444444444444444444444444444444444444444444444 \
   # Install Databricks CLI
   && curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh \
   # Install steampipe
@@ -188,7 +184,7 @@ RUN su - ${USER_NAME} -c "\
   ipykernel \
   boto3 \
   setuptools \
-  bandit==1.7.4 \
+  bandit==1.8.6 \
   && pipx install --python /usr/local/bin/python --pip-args='--no-cache-dir' --preinstall setuptools \
   ansible-lint \
   autopep8 \
@@ -200,6 +196,7 @@ RUN su - ${USER_NAME} -c "\
   poetry \
   ruff \
   pyright \
+  uv \
   && steampipe plugin install aws awscfn terraform jira \
   && cd /tmp \
   && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh \

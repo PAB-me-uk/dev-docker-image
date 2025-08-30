@@ -300,6 +300,10 @@ class Tests(unittest.TestCase):
         )
         self.zsh_can_access("bandit --version")
 
+    def test_uv(self):
+        self.assertEqual("/home/dev/.local/bin/uv", shutil.which("uv"))
+        self.zsh_can_access("uv --version")
+
     def test_zsh_output(self):
         test_line = "just this line"
         self.assertEqual(f"{test_line}\n", self.zsh_can_access(f"echo {test_line}"))
