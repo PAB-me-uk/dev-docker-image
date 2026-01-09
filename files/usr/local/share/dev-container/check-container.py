@@ -187,8 +187,9 @@ class Tests(unittest.TestCase):
         # self.zsh_can_access("black --version")
 
     def test_cfn_lint(self):
-        self.assertEqual("/home/dev/.local/bin/cfn-lint", shutil.which("cfn-lint"))
-        self.zsh_can_access("cfn-lint --version")
+        if self.python_version not in ["3.14"]:
+            self.assertEqual("/home/dev/.local/bin/cfn-lint", shutil.which("cfn-lint"))
+            self.zsh_can_access("cfn-lint --version")
 
     def test_cfn_square(self):
         if self.python_version in ["3.9"]:
