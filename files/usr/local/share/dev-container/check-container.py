@@ -191,11 +191,6 @@ class Tests(unittest.TestCase):
             self.assertEqual("/home/dev/.local/bin/cfn-lint", shutil.which("cfn-lint"))
             self.zsh_can_access("cfn-lint --version")
 
-    def test_cfn_square(self):
-        if self.python_version in ["3.9"]:
-            self.assertEqual("/home/dev/.local/bin/cf", shutil.which("cf"))
-            self.zsh_can_access("cf --version")
-
     def test_poetry(self):
         self.assertEqual("/home/dev/.local/bin/poetry", shutil.which("poetry"))
         self.zsh_can_access("poetry --version")

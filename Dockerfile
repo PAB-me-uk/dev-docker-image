@@ -217,13 +217,6 @@ RUN su - ${USER_NAME} -c "\
   && rm -rf /home/dev/.cache/pip \
   "
 
-# Install CFN Square which we allow to fail as not supported in Python > 3.9
-RUN su - ${USER_NAME} -c "\
-  source ${IMAGE_WORKSPACE_DIR}/.python/${IMAGE_PYTHON_VERSION}/bin/activate \
-  && pipx install cfn-square \
-  || echo We expect install of cfn-square to fail in unsupported Python versions \
-  "
-
 RUN sed -i "s|\${env:IMAGE_PYTHON_VERSION}|${IMAGE_PYTHON_VERSION}|g" ${USER_HOME}/.vscode-server/data/Machine/settings.json \
   && sed -i "s|\${env:IMAGE_USER_HOME_BIN}|${IMAGE_USER_HOME_BIN}|g" ${USER_HOME}/.vscode-server/data/Machine/settings.json
 
