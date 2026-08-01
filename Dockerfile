@@ -197,6 +197,7 @@ RUN su - ${USER_NAME} -c "\
   ruff \
   pyright \
   uv \
+  && pipx inject pip-tools "pip==26.1.2" typing_extensions \
   && steampipe plugin install aws awscfn terraform jira \
   && cd /tmp \
   && wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh \
