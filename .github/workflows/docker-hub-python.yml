@@ -73,11 +73,9 @@ jobs:
     steps:
       - name: Docker Login
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-      - name: Create Combined Manifest
+      - name: Create and Push Combined Manifest
         run: |
-          docker manifest create \
-          ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }} \
-          --amend ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}-amd64 \
-          --amend ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}-arm64v8
-      - name: Push Combined Manifest
-        run: docker manifest push ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}
+          docker buildx imagetools create \
+            -t ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }} \
+            ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}-amd64 \
+            ${{ env.IMAGE_NAME }}:${{ matrix.PYTHON_VERSION }}-arm64v8
